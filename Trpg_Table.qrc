@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>mainwindow.ui</file>
+    </qresource>
+    <qresource prefix="/qml">
+        <file>qml/main.qml</file>
+        <file>qml/battleMap1.qml</file>
+    </qresource>
+</RCC>

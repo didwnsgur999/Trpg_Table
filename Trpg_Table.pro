@@ -1,4 +1,7 @@
 QT       += core gui network
+QT       += qml quick quickwidgets
+QT       += positioning location
+QT       += quick location positioning positioning_private
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,3 +30,6 @@ CONFIG += embed_translations
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    Trpg_Table.qrc
