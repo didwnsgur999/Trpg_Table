@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <memory.h>
+#include "ProductUI.h"
+
+class Backend;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -14,10 +18,16 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow( Backend* backend, QWidget *parent = nullptr);
     ~MainWindow();
 
+    //소유권을 줘야되서 move로 변경해줘야한다.
+    void setProductUI(std::unique_ptr<ProductUI> productUi) {m_productUI = std::move(productUi);}
+    ProductUI* getProductUI() {return m_productUI.get();}
 private:
+    Backend* m_backend;
     Ui::MainWindow *ui;
+    //UI widget들이 이곳에 들어있다. => unique ptr로 설정될 예정.
+    std::unique_ptr<ProductUI> m_productUI;
 };
 #endif // MAINWINDOW_H
