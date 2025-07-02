@@ -25,7 +25,7 @@ Item {
             border.width: 1
 
             Text{
-                text: "당신이 선택한 전장: 크로아"
+                text: "커밋 테스트용!"
                 color: "white"
                 font.pixelSize: 24
                 anchors.centerIn: parent
