@@ -11,24 +11,11 @@ public:
     Product(int id, QString name, int price);
 
     //Product를 Json으로 변경하는 함수
-
-    QJsonObject toJson() const {
-        QJsonObject obj;
-        obj["id"] = getId();
-        obj["name"] = getName();
-        obj["price"] = getPrice();
-        return obj;
-    }
+    QJsonObject toJson() const ;
 
     //Json을 Product로 변경하는 함수.
     //외부에서 객체 없이 부르는 경우 사용해야 하므로 static이 붙는다.
-    static QSharedPointer<Product> fromJson(const QJsonObject& obj) {
-        return QSharedPointer<Product>::create(
-            obj["id"].toInt(),
-            obj["name"].toString(),
-            obj["price"].toInt()
-            );
-    }
+    static QSharedPointer<Product> fromJson(const QJsonObject& obj);
 
     //getter / setter
 
@@ -43,6 +30,5 @@ private:
     int m_id;
     QString m_name;
     int m_price;
-
 };
 #endif // PRODUCT_H

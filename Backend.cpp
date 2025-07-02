@@ -1,5 +1,4 @@
 #include "Backend.h"
-using namespace std;
 
 Backend::Backend(QObject* parent) {}
 

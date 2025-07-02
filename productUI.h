@@ -19,6 +19,11 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_goto_ui_clicked();
+
+signals:
+    void requestPageChange(int index);
+
 private:
     Backend* m_backend;
     Ui::ProductUI *ui;

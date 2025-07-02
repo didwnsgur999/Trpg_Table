@@ -11,21 +11,30 @@ CONFIG += c++17
 SOURCES += \
     Backend.cpp \
     Info.cpp \
-    Product.cpp \
-    ProductUI.cpp \
+    clientchat.cpp \
+    customer.cpp \
+    lobbyui.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    order.cpp \
+    product.cpp \
+    productUI.cpp
 
 HEADERS += \
     Backend.h \
     Info.h \
-    Product.h \
-    ProductUI.h \
-    mainwindow.h
+    clientchat.h \
+    customer.h \
+    lobbyui.h \
+    mainwindow.h \
+    order.h \
+    product.h \
+    productUI.h
 
 FORMS += \
-    ProductUI.ui \
-    mainwindow.ui
+    lobbyui.ui \
+    mainwindow.ui \
+    productUI.ui
 
 TRANSLATIONS += \
     Trpg_Table_ko_KR.ts

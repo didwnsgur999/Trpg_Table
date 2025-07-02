@@ -1,6 +1,6 @@
-#include "ProductUI.h"
-#include "ui_ProductUI.h"
-#include "Product.h"
+#include "productUI.h"
+#include "ui_productUI.h"
+#include "product.h"
 #include <QSharedPointer>
 #include "backend.h"
 
@@ -27,5 +27,10 @@ void ProductUI::on_pushButton_clicked()
     newProduct->setPrice(pPrice);
     newProduct->setName(pName);
     m_backend->addProduct(newProduct);
+}
+
+void ProductUI::on_goto_ui_clicked()
+{
+    emit requestPageChange(1);
 }
 

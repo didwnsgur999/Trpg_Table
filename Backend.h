@@ -8,10 +8,8 @@
 #include <QJsonArray>
 #include <QFile>
 #include <QJsonDocument>
-#include "Product.h"
+#include "product.h"
 #include <QSharedPointer>
-
-using namespace std;
 
 class Backend : QObject
 {
@@ -39,7 +37,7 @@ public:
 
     template<typename T>
     bool loadJson(const QString& filename, QVector<QSharedPointer<T>>& dest,
-                  function<QSharedPointer<T>(const QJsonObject&)> factory) {
+                  std::function<QSharedPointer<T>(const QJsonObject&)> factory) {
         QFile file(filename);
         if (!file.open(QIODevice::ReadOnly))
             return false;
