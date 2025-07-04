@@ -15,7 +15,12 @@ class Backend : QObject
 {
     Q_OBJECT
 public:
-    Backend(QObject* parent = nullptr);
+    //backend도 싱글턴으로 만든다.
+    static Backend& getInstance() {
+        static Backend instance;
+        return instance;
+    }
+
     void addProduct(QSharedPointer<Product> prod);
 
     const QVector<QSharedPointer<Product>>& getProducts() const;
@@ -51,6 +56,10 @@ public:
         return true;
     }
 private:
+    Backend(QObject* parent = nullptr);
+    Backend(const Backend& ) {}
+    Backend& operator=(const Backend& ) {}
+    ~Backend() {}
     QVector<QSharedPointer<Product>> productList;
 };
 

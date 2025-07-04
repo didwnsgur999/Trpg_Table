@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     Backend.cpp \
     Info.cpp \
+    chathandler.cpp \
     clientchat.cpp \
     customer.cpp \
     lobbyui.cpp \
@@ -23,6 +24,7 @@ SOURCES += \
 HEADERS += \
     Backend.h \
     Info.h \
+    chathandler.h \
     clientchat.h \
     customer.h \
     lobbyui.h \

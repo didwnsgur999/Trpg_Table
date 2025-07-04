@@ -3,24 +3,31 @@
 
 #include <QWidget>
 #include <QTcpSocket>
-#include <memory.h>
+#include "lobbyui.h"
+#include "chathandler.h"
 
 class ClientChat : public QObject
 {
     Q_OBJECT
 public:
     ClientChat(QObject *parent=nullptr);
-    void setClientSocket(QTcpSocket* _clientSocket) { m_clientSocket=_clientSocket; }
-    void makeSocket(QString& ip, int port);
+
+    //socket 만들고 연결하기. m_lobbyUI를 넣는게 불만이긴하다.
+    void makeSocket(QString& ip, int port,lobbyUI* m_lobbyUI);
 
     void echoData();
-    void sendData(QString& mesg);
+    void sendData(QJsonDocument& doc);
+
+    //getter/setter
+    void setClientSocket(QTcpSocket* _clientSocket) { m_clientSocket=_clientSocket; }
+    ChatHandler* getChatHandler(){return m_chatHandler;}
 
 signals:
     void newMessage(QString& message);
 
 private:
     QTcpSocket* m_clientSocket;
+    ChatHandler* m_chatHandler;
 };
 
 #endif // CLIENTCHAT_H

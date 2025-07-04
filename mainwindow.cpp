@@ -4,32 +4,31 @@
 #include "lobbyui.h"
 #include "product.h"
 #include "Backend.h"
-#include <memory.h>
 #include <QDir>
 
-MainWindow::MainWindow(Backend* backend, QWidget *parent)
-    : QMainWindow(parent), m_backend(backend)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    // UI 페이지 생성
-    std::unique_ptr<ProductUI> _productUI = std::make_unique<ProductUI>(backend);
-    std::unique_ptr<lobbyUI> _lobbyUI = std::make_unique<lobbyUI>(backend);
-    //unique_ptr는 인자로 넘길때 move써야됨
-    setProductUI(std::move(_productUI));
-    setLobbyUI(std::move(_lobbyUI));
+    //clientChat 단일로 MainWindow에서 관리.
+    m_clientChat = new ClientChat(this);
+
+    // UI 페이지 생성 + m_clientChat을 모두가 공유해야한다. UI에서 send보낼때 필요함.
+    m_productUI = new ProductUI(m_clientChat,this);
+    m_lobbyUI = new lobbyUI(m_clientChat,this);
 
     // 스택에 추가 먼저 넣은 순서대로 0, 1, 2... 이다.
-    ui->UI_STACK->addWidget(getProductUI());
-    ui->UI_STACK->addWidget(getLobbyUI());
+    ui->UI_STACK->addWidget(m_productUI);
+    ui->UI_STACK->addWidget(m_lobbyUI);
 
     // 첫 화면은 ProductUI
     ui->UI_STACK->setCurrentIndex(0);
     //signal 연결 -> 이게 이제 ui 변경 signal, slot
-    connect(getProductUI(), &ProductUI::requestPageChange, this, [=](int index) {
+    connect(m_productUI, &ProductUI::requestPageChange, this, [=](int index) {
         ui->UI_STACK->setCurrentIndex(index);
     });
-    connect(getLobbyUI(), &lobbyUI::requestPageChange, this, [=](int index) {
+    connect(m_lobbyUI, &lobbyUI::requestPageChange, this, [=](int index) {
         ui->UI_STACK->setCurrentIndex(index);
     });
 }
@@ -42,12 +41,12 @@ MainWindow::~MainWindow()
 //for debug
 void MainWindow::on_ProductButton_clicked()
 {
-    if(m_backend->saveJson("products.json", m_backend->getProducts())){
+    if(Backend::getInstance().saveJson("products.json", Backend::getInstance().getProducts())){
         qDebug() << "Current path:" << QDir::currentPath();
     }
 
     QVector<QSharedPointer<Product>> loadedProducts;
-    if (m_backend->loadJson<Product>("products.json", loadedProducts,
+    if (Backend::getInstance().loadJson<Product>("products.json", loadedProducts,
                                      [](const QJsonObject& obj) { return Product::fromJson(obj); }))
     {
         for (const auto& prod : loadedProducts)

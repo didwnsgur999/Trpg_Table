@@ -3,6 +3,7 @@
 
 #include <QWidget>
 class Backend;
+class ClientChat;
 
 namespace Ui {
 class ProductUI;
@@ -13,7 +14,7 @@ class ProductUI : public QWidget
     Q_OBJECT
 
 public:
-    explicit ProductUI(Backend* backend,QWidget *parent = nullptr);
+    explicit ProductUI(ClientChat* clientChat,QWidget *parent = nullptr);
     ~ProductUI();
 
 private slots:
@@ -25,9 +26,8 @@ signals:
     void requestPageChange(int index);
 
 private:
-    Backend* m_backend;
     Ui::ProductUI *ui;
-
+    ClientChat* m_clientChat;
 };
 
 #endif // PRODUCTUI_H

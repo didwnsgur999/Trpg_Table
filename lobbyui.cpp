@@ -2,9 +2,9 @@
 #include "ui_lobbyui.h"
 #include "clientchat.h"
 
-lobbyUI::lobbyUI(Backend* backend,QWidget *parent)
-    : QWidget(parent),m_backend(backend)
-    , ui(new Ui::lobbyUI)
+lobbyUI::lobbyUI(ClientChat* clientChat,QWidget *parent)
+    : QWidget(parent)
+    , ui(new Ui::lobbyUI),m_clientChat(clientChat)
 {
     ui->setupUi(this);
 }
@@ -16,17 +16,21 @@ lobbyUI::~lobbyUI()
 
 void lobbyUI::on_join_server_clicked()
 {
+    qDebug()<<"onjoinserver_clicked";
     QString rname = ui->nameEdit->text();
     QString ipNum = ui->ipEdit->text();
     int portNum = ui->portEdit->text().toInt();
 
-    auto client_chat= new ClientChat();
-    m_clientchat = client_chat;
-    client_chat->makeSocket(ipNum,portNum);
-    connect(m_clientchat, &ClientChat::newMessage, this, [this](const QString& msg){
-        // 예: textEdit에 메시지를 추가
-        ui->textEdit->append("Server: " + msg);
+    m_clientChat->makeSocket(ipNum,portNum,this);
+    //일단 이 뒤로 안나오니까
+    connect(m_clientChat, &ClientChat::newMessage, this, [this](const QString& msg){
+        // textEdit에 메시지를 추가
+        ui->textEdit->append("서버: " + msg);
     });
+}
+
+void lobbyUI::on_join_server_error(QAbstractSocket::SocketError socketError){
+    ui->textEdit->append("[server]failed connection. errorcode: "+QString::number(socketError));
 }
 
 void lobbyUI::on_goto_prod_clicked()
@@ -37,5 +41,12 @@ void lobbyUI::on_goto_prod_clicked()
 void lobbyUI::on_sendButton_clicked()
 {
     QString message = ui->sendMesgEdit->text();
-    m_clientchat->sendData(message);
+
+    QJsonObject obj;
+    obj["cmd"]="chat";
+    obj["text"] = message;
+
+    QJsonDocument doc(obj);
+    //JsonDocument로 넘겨야 된다.
+    m_clientChat->sendData(doc);
 }

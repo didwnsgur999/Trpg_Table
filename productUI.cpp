@@ -4,9 +4,9 @@
 #include <QSharedPointer>
 #include "backend.h"
 
-ProductUI::ProductUI(Backend* backend,QWidget *parent)
-    : QWidget(parent),m_backend(backend)
-    , ui(new Ui::ProductUI)
+ProductUI::ProductUI(ClientChat* clientChat,QWidget *parent)
+    : QWidget(parent)
+    , ui(new Ui::ProductUI),m_clientChat(clientChat)
 {
     ui->setupUi(this);
 }
@@ -26,7 +26,7 @@ void ProductUI::on_pushButton_clicked()
     newProduct->setId(pId);
     newProduct->setPrice(pPrice);
     newProduct->setName(pName);
-    m_backend->addProduct(newProduct);
+    Backend::getInstance().addProduct(newProduct);
 }
 
 void ProductUI::on_goto_ui_clicked()
