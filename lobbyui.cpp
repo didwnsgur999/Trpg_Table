@@ -1,12 +1,16 @@
 #include "lobbyui.h"
 #include "ui_lobbyui.h"
 #include "clientchat.h"
+#include "chathandler.h"
 
 lobbyUI::lobbyUI(ClientChat* clientChat,QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::lobbyUI),m_clientChat(clientChat)
 {
     ui->setupUi(this);
+    connect(clientChat->getChatHandler(),&ChatHandler::chatreceived,this,[this](const QString&msg){
+        ui->textEdit->append("서버 send" + msg);
+    });
 }
 
 lobbyUI::~lobbyUI()
@@ -17,7 +21,6 @@ lobbyUI::~lobbyUI()
 void lobbyUI::on_join_server_clicked()
 {
     qDebug()<<"onjoinserver_clicked";
-    QString rname = ui->nameEdit->text();
     QString ipNum = ui->ipEdit->text();
     int portNum = ui->portEdit->text().toInt();
 
@@ -48,5 +51,17 @@ void lobbyUI::on_sendButton_clicked()
 
     QJsonDocument doc(obj);
     //JsonDocument로 넘겨야 된다.
+    m_clientChat->sendData(doc);
+}
+
+void lobbyUI::on_loginButton_clicked()
+{
+    QString name = ui->nameEdit->text();
+    QString pwd = ui->pwdEdit->text();
+    QJsonObject obj;
+    obj["cmd"]="login";
+    obj["cName"]=name;
+    obj["cPwd"]=pwd;
+    QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
 }

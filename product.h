@@ -8,7 +8,7 @@ class Product : public Info{
 public:
     //기본생성자가 있어야
     Product();
-    Product(int id, QString name, int price);
+    Product(int id, QString name, int price,int cnt);
 
     //Product를 Json으로 변경하는 함수
     QJsonObject toJson() const ;
@@ -25,10 +25,13 @@ public:
     QString getName() const { return m_name; }
     void setPrice(int price) { m_price = price; }
     int getPrice() const { return m_price; }
+    void setCnt(int cnt) { m_cnt = cnt; }
+    int getCnt() const { return m_cnt; }
 
 private:
     int m_id;
     QString m_name;
     int m_price;
+    int m_cnt;
 };
 #endif // PRODUCT_H

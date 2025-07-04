@@ -14,6 +14,8 @@ public:
 
 private:
 
+signals:
+    void chatreceived(QString text);
 };
 
 #endif // CHATHANDLER_H

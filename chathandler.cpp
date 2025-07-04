@@ -18,5 +18,6 @@ void ChatHandler::getByteData(QByteArray& data){
     //if(cmd==)
     if(cmd=="chat"){
         qDebug()<<obj.value("text").toString();
+        emit chatreceived(obj.value("text").toString());
     }
 }

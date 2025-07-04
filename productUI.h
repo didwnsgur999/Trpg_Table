@@ -3,7 +3,7 @@
 
 #include <QWidget>
 class Backend;
-class ClientChat;
+#include "clientchat.h"
 
 namespace Ui {
 class ProductUI;
