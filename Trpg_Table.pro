@@ -14,7 +14,9 @@ SOURCES += \
     chathandler.cpp \
     clientchat.cpp \
     customer.cpp \
+    lobbymainui.cpp \
     lobbyui.cpp \
+    loginui.cpp \
     main.cpp \
     mainwindow.cpp \
     order.cpp \
@@ -27,14 +29,18 @@ HEADERS += \
     chathandler.h \
     clientchat.h \
     customer.h \
+    lobbymainui.h \
     lobbyui.h \
+    loginui.h \
     mainwindow.h \
     order.h \
     product.h \
     productUI.h
 
 FORMS += \
+    lobbymainui.ui \
     lobbyui.ui \
+    loginui.ui \
     mainwindow.ui \
     productUI.ui
 

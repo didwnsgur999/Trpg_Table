@@ -1,36 +1,38 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "productUI.h"
-#include "lobbyui.h"
+// #include "lobbyui.h"     // 기존 lobbyUI는 이제 LobbyMainUI 안에서 사용되므로 여기서는 제거
+#include "loginui.h"
+#include "lobbymainui.h" // LobbyMainUI 포함
 #include "product.h"
 #include "Backend.h"
 #include <QDir>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //clientChat 단일로 MainWindow에서 관리.
-    m_clientChat = new ClientChat(this);
 
-    // UI 페이지 생성 + m_clientChat을 모두가 공유해야한다. UI에서 send보낼때 필요함.
-    m_productUI = new ProductUI(m_clientChat,this);
-    m_lobbyUI = new lobbyUI(m_clientChat,this);
+    m_clientChat = new ClientChat(this); // ClientChat 단일 인스턴스 생성
 
-    // 스택에 추가 먼저 넣은 순서대로 0, 1, 2... 이다.
-    ui->UI_STACK->addWidget(m_productUI);
-    ui->UI_STACK->addWidget(m_lobbyUI);
+    m_loginUI = new LoginUI(m_clientChat, this);      // 로그인 UI 생성
+    m_productUI = new ProductUI(m_clientChat, this);  // 상품 관리 UI 생성
+    m_lobbyMainUI = new LobbyMainUI(m_clientChat, this); // 로비 메인 UI 생성 (ClientChat 전달)
 
-    // 첫 화면은 ProductUI
-    ui->UI_STACK->setCurrentIndex(0);
-    //signal 연결 -> 이게 이제 ui 변경 signal, slot
-    connect(m_productUI, &ProductUI::requestPageChange, this, [=](int index) {
-        ui->UI_STACK->setCurrentIndex(index);
-    });
-    connect(m_lobbyUI, &lobbyUI::requestPageChange, this, [=](int index) {
-        ui->UI_STACK->setCurrentIndex(index);
-    });
+    // 스택 위젯에 UI 페이지들 추가 (순서 중요)
+    ui->UI_STACK->addWidget(m_loginUI);      // 0번 인덱스: 로그인 UI (초기 화면)
+    ui->UI_STACK->addWidget(m_lobbyMainUI); // 1번 인덱스: 로비 메인 UI (로그인 성공 시 이동)
+    ui->UI_STACK->addWidget(m_productUI);    // 2번 인덱스: 상품 UI (관리자 기능)
+
+    ui->UI_STACK->setCurrentIndex(0); // 첫 화면은 로그인 UI
+
+    // UI 페이지 전환을 위한 시그널-슬롯 연결
+    connect(m_loginUI, &LoginUI::requestPageChange, this, &MainWindow::changePage);
+    connect(m_productUI, &ProductUI::requestPageChange, this, &MainWindow::changePage);
+    // m_lobbyMainUI에서도 페이지 전환이 필요하다면 시그널을 추가하고 연결합니다.
+    // connect(m_lobbyMainUI, &LobbyMainUI::requestPageChange, this, &MainWindow::changePage);
 }
 
 MainWindow::~MainWindow()
@@ -38,7 +40,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//for debug
+void MainWindow::changePage(int index)
+{
+    ui->UI_STACK->setCurrentIndex(index);
+}
+
+// for debug - 이 부분은 기존 코드 유지
 void MainWindow::on_ProductButton_clicked()
 {
     if(Backend::getInstance().saveJson("products.json", Backend::getInstance().getProducts())){
@@ -47,10 +54,9 @@ void MainWindow::on_ProductButton_clicked()
 
     QVector<QSharedPointer<Product>> loadedProducts;
     if (Backend::getInstance().loadJson<Product>("products.json", loadedProducts,
-                                     [](const QJsonObject& obj) { return Product::fromJson(obj); }))
+                                                 [](const QJsonObject& obj) { return Product::fromJson(obj); }))
     {
         for (const auto& prod : loadedProducts)
             qDebug() << prod->toJson();
     }
 }
-

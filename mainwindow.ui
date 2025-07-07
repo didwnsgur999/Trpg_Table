@@ -22,20 +22,6 @@
       </property>
      </widget>
     </item>
-    <item>
-     <widget class="QPushButton" name="CustomerButton">
-      <property name="text">
-       <string>Customer</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="ProductButton">
-      <property name="text">
-       <string>Product</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -44,7 +30,7 @@
      <x>0</x>
      <y>0</y>
      <width>570</width>
-     <height>18</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

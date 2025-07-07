@@ -54,10 +54,11 @@ void lobbyUI::on_sendButton_clicked()
     m_clientChat->sendData(doc);
 }
 
+/* 비번 관련해서 잠시 삭제
 void lobbyUI::on_loginButton_clicked()
 {
     QString name = ui->nameEdit->text();
-    QString pwd = ui->pwdEdit->text();
+    //QString pwd = ui->pwdEdit->text();
     QJsonObject obj;
     obj["cmd"]="login";
     obj["cName"]=name;
@@ -65,3 +66,4 @@ void lobbyUI::on_loginButton_clicked()
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
 }
+*/

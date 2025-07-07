@@ -29,7 +29,7 @@ private slots:
 
     void on_sendButton_clicked();
 
-    void on_loginButton_clicked();
+    //void on_loginButton_clicked();
 
 public slots:
     void on_join_server_error(QAbstractSocket::SocketError socketError);
