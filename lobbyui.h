@@ -2,13 +2,14 @@
 #define LOBBYUI_H
 
 #include <QWidget>
-#include <QAbstractSocket>
+#include <QTcpSocket>
+#include "clientchat.h"
 
 class ClientChat;
 class Backend;
 
 namespace Ui {
-class lobbyUI;
+class lobbyUI; // UI 파일 생성할 떄 저장한 클래스 이름
 }
 
 class lobbyUI : public QWidget
@@ -20,19 +21,14 @@ public:
     ~lobbyUI();
 
 signals:
-    void requestPageChange(int index);
+    void requestPageChange(int index); // 페이지 전환 요청 시그널
 
 private slots:
-    void on_join_server_clicked();
-
-    void on_goto_prod_clicked();
-
-    void on_sendButton_clicked();
-
-    //void on_loginButton_clicked();
-
-public slots:
-    void on_join_server_error(QAbstractSocket::SocketError socketError);
+    void on_join_server_clicked(); // 서버 연결 버튼 클릭 시
+    void on_join_server_error(QAbstractSocket::SocketError socketError); // 서버 연결 오류 처리
+    void on_serverConnected(); // 서버 연결 성공 시 처리 (추가)
+    void on_goto_prod_clicked(); // 상품 페이지 이동 버튼 클릭 시
+    void on_sendButton_clicked(); // 채팅 메시지 전송 버튼 클릭 시
 
 private:
     Ui::lobbyUI *ui;

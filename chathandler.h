@@ -5,6 +5,7 @@
 #include <QByteArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray> // QJsonArray 사용을 위함
 #include <QDebug> // 디버깅용
 
 class ChatHandler : public QObject
@@ -19,8 +20,15 @@ signals:
     void chatreceived(const QString& msg);
     // 새로 추가된 시그널: 로그인 결과 (성공 여부, 메시지)
     void loginResult(bool success, const QString& message);
+    // 0707 추가된 시그널
+    void roomListReceived(const QJsonArray& roomList); // 채팅방 목록 수신 시그널
+    void addRoomResult(bool success, const QString& message); // 방생성 결과
+    void joinRoomResult(bool success, const QString& messsage); // 방입장 결과
+    void leaveRoomResult(bool success, const QString& message); // 방나가기 결과
 
 private:
+    // Json 파싱 후 처리하는 헬퍼 함수
+    void processJsonObject(const QJsonObject& obj);
 };
 
 #endif // CHATHANDLER_H
