@@ -2,24 +2,26 @@
 #define LOBBYMAINUI_H
 
 #include <QWidget>
-#include <QSplitter>       // 2:1 분할을 위해 QSplitter 사용
-#include <QHBoxLayout>     // 레이아웃을 위해 포함
-#include <QVBoxLayout>     // 레이아웃을 위해 포함
-#include <QLabel>          // 환영합니다 텍스트 등을 위해 포함
-#include <QPushButton>     // 버튼을 위해 포함
-#include <QStackedWidget>  // 맵/상점, 채팅방 목록/채팅방 전환을 위해 포함
+#include <QSplitter> // 2:1 분할을 위해 QSplitter 사용
+#include <QHBoxLayout> // 레이아웃을 위해 포함
+#include <QVBoxLayout> // 레이아웃을 위해 포함
+#include <QLabel> // 환영합니다 텍스트 등을 위해 포함
+#include <QPushButton> // 버튼을 위해 포함
+#include <QStackedWidget> // 맵/상점, 채팅방 목록/채팅방 전환을 위해 포함
+#include <QListWidget> // 채팅방 목록 표시
+#include <QLineEdit> // 채팅방 이름 입력 필드
+#include <QJsonArray> // 채팅방 목록 데이터
 
-#include "clientchat.h"    // ClientChat을 전달하기 위해 필요
-#include "lobbyui.h"       // 기존 lobbyUI (채팅방 역할) 포함
-
-// 주의: Qt Designer UI 파일을 사용하지 않으므로, 'namespace Ui { class LobbyMainUI; }' 및 'ui' 멤버 변수는 사용하지 않습니다.
+#include "clientchat.h" // ClientChat을 전달하기 위해 필요
+#include "lobbyui.h" // 기존 lobbyUI (채팅방 역할) 포함
+#include "chathandler.h" // ChatHandler 시그널 받으려고
 
 class LobbyMainUI : public QWidget
 {
     Q_OBJECT
 
 public:
-    // ClientChat* clientChat 인자를 받아 ClientChat 인스턴스를 공유합니다.
+    // ClientChat* clientChat 인자를 받아 ClientChat 인스턴스를 공유
     explicit LobbyMainUI(ClientChat* clientChat, QWidget *parent = nullptr);
     ~LobbyMainUI();
 
@@ -39,6 +41,12 @@ private slots:
     // 오른쪽 패널: 채팅방 나가기 버튼 (임시)
     void on_exitChatRoomButton_clicked();
 
+    // 채팅방 목록 및 생성 관련 추가 슬롯
+    void requestRoomList(); // 서버에 채팅방 목록 요청
+    void updateRoomList(const QJsonArray& roomList); // 서버로부터 받은 목록으로 UI 업데이트
+    void handleRoomCreationResult(bool success, const QString& message); // 방 생성 결과 처리
+    void handleRoomJoinResult(bool success, const QString& message); // 방 입장 결과 처리
+    void handleRoomLeaveResult(bool success, const QString& message); // 방 나가기 결과 처리
 
 private:
     ClientChat* m_clientChat; // ClientChat 인스턴스 (서버 통신용)
@@ -49,21 +57,27 @@ private:
     // 왼쪽 패널 (맵/상점)
     QWidget* m_leftPaneWidget;
     QStackedWidget* m_leftStackedWidget; // 맵과 상점을 전환할 스택 위젯
-    QWidget* m_mapDisplayWidget;         // 맵을 표시할 임시 위젯
-    QWidget* m_shopWidget;               // 상점을 표시할 임시 위젯
-    QPushButton* m_leftShopButton;       // 왼쪽 맵 페이지에서 상점 가는 버튼
-    QPushButton* m_leftMapButton;        // 왼쪽 상점 페이지에서 맵 가는 버튼
+    QWidget* m_mapDisplayWidget; // 맵을 표시할 임시 위젯
+    QWidget* m_shopWidget;  // 상점을 표시할 임시 위젯
+    QPushButton* m_leftShopButton; // 왼쪽 맵 페이지에서 상점 가는 버튼
+    QPushButton* m_leftMapButton; // 왼쪽 상점 페이지에서 맵 가는 버튼
 
 
     // 오른쪽 패널 (채팅)
     QWidget* m_rightPaneWidget;
-    QLabel* m_welcomeLabel;                 // "환영합니다!" 라벨
-    QPushButton* m_createChatRoomButton;    // "채팅방 생성" 버튼
-    QStackedWidget* m_rightStackedWidget;   // 채팅방 목록과 개별 채팅방 전환용 스택 위젯
-    QWidget* m_chatRoomListWidget;          // 모든 채팅방 목록을 표시할 임시 위젯
-    lobbyUI* m_currentChatRoomUI;           // 기존 lobbyUI를 개별 채팅방으로 사용
-    QPushButton* m_enterChatRoomButton;     // 채팅방 목록에서 입장 버튼
-    QPushButton* m_exitChatRoomButton;      // 채팅방에서 나가기 버튼
+    QLabel* m_welcomeLabel; // "환영합니다!" 라벨
+    QPushButton* m_createChatRoomButton; // "채팅방 생성" 버튼
+    QStackedWidget* m_rightStackedWidget; // 채팅방 목록과 개별 채팅방 전환용 스택 위젯
+    QWidget* m_chatRoomListWidget; // 모든 채팅방 목록을 표시할 임시 위젯
+    lobbyUI* m_currentChatRoomUI; // 기존 lobbyUI를 개별 채팅방으로 사용
+    QPushButton* m_enterChatRoomButton; // 채팅방 목록에서 입장 버튼
+    QPushButton* m_exitChatRoomButton; // 채팅방에서 나가기 버튼
+
+    // 채팅방 목록 및 생성 관련 추가 UI 요소
+    QListWidget* m_roomListWidget; // 채팅방 목록 표시
+    QPushButton* m_refreshRoomListButton; // 채팅방 목록 새로고침
+    QLineEdit* m_createRoomNameLineEdit; // 방 이름 입력 필드
+    QPushButton* m_createRoomButton; // 방 생성 버튼
 };
 
 #endif // LOBBYMAINUI_H

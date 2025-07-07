@@ -37,7 +37,7 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
         qDebug() << "채팅 메시지 수신: " << chatText;
         emit chatreceived(chatText);
     } else if (cmd == "ret_login") { // 서버로부터 로그인 결과가 왔을 때
-        bool success = obj.value("success").toBool();
+        bool success = (obj.value("text")=="login success");
         QString message = obj.value("message").toString();
         qDebug() << "로그인 결과 수신: 성공=" << success << ", 메시지=" << message;
         emit loginResult(success, message); // LoginUI로 결과 전달
