@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>384</width>
-    <height>325</height>
+    <width>456</width>
+    <height>387</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,6 +27,27 @@
       <widget class="QLineEdit" name="nameEdit">
        <property name="text">
         <string>name</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="loginButton">
+       <property name="text">
+        <string>login</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="PwdQString">
+       <property name="text">
+        <string>userPwd</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="pwdEdit">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -87,14 +108,14 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="join_server">
+       <property name="text">
+        <string>Join Server</string>
+       </property>
+      </widget>
+     </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QPushButton" name="join_server">
-     <property name="text">
-      <string>Join Server</string>
-     </property>
-    </widget>
    </item>
    <item>
     <widget class="QPushButton" name="goto_prod">
