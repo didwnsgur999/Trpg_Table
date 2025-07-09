@@ -20,9 +20,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void changePage(int index);      // 페이지 전환 슬롯
+
 private slots:
     void on_ProductButton_clicked(); // 관리자 UI 관련 버튼 슬롯
-    void changePage(int index);      // 페이지 전환 슬롯
 
 private:
     Ui::MainWindow *ui;

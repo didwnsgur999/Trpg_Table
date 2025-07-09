@@ -31,8 +31,6 @@ MainWindow::MainWindow(QWidget *parent)
     // UI 페이지 전환을 위한 시그널-슬롯 연결
     connect(m_loginUI, &LoginUI::requestPageChange, this, &MainWindow::changePage);
     connect(m_productUI, &ProductUI::requestPageChange, this, &MainWindow::changePage);
-    // m_lobbyMainUI에서도 페이지 전환이 필요하다면 시그널을 추가하고 연결합니다.
-    // connect(m_lobbyMainUI, &LobbyMainUI::requestPageChange, this, &MainWindow::changePage);
 }
 
 MainWindow::~MainWindow()
@@ -43,6 +41,10 @@ MainWindow::~MainWindow()
 void MainWindow::changePage(int index)
 {
     ui->UI_STACK->setCurrentIndex(index);
+    // LobbyMainUI로 전환될 때만 initializeLobby 호출
+    if (index == 1) { // LobbyMainUI의 인덱스가 1이라고 가정
+        m_lobbyMainUI->initializeLobby(); // <-- 추가: 로비 초기화 함수 호출
+    }
 }
 
 // for debug - 이 부분은 기존 코드 유지

@@ -25,6 +25,8 @@ public:
     explicit LobbyMainUI(ClientChat* clientChat, QWidget *parent = nullptr);
     ~LobbyMainUI();
 
+    void initializeLobby();
+
 signals:
     // (향후 필요 시) 메인 윈도우에 페이지 전환을 요청하는 시그널
     void requestPageChange(int index);

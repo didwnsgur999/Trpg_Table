@@ -135,16 +135,19 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
     connect(m_clientChat->getChatHandler(), &ChatHandler::addRoomResult, this, &LobbyMainUI::handleRoomCreationResult);
     connect(m_clientChat->getChatHandler(), &ChatHandler::joinRoomResult, this, &LobbyMainUI::handleRoomJoinResult);
     connect(m_clientChat->getChatHandler(), &ChatHandler::leaveRoomResult, this, &LobbyMainUI::handleRoomLeaveResult);
-
-
-    // 초기 채팅방 목록 요청
-    requestRoomList();
 }
 
 LobbyMainUI::~LobbyMainUI()
 {
     // UI 파일이 없으므로 'delete ui;'는 필요 없음
     // 자식 위젯들은 부모 위젯 (QSplitter, QStackedWidget 등)이 소멸될 때 함께 소멸
+}
+
+// 로비 UI가 활성화될 때 호출될 초기화 함수 구현
+void LobbyMainUI::initializeLobby()
+{
+    qDebug() << "LobbyMainUI::initializeLobby() 호출: 채팅방 목록 요청";
+    requestRoomList(); // 로비 화면이 준비되면 채팅방 목록 요청
 }
 
 // 왼쪽 패널 슬롯
