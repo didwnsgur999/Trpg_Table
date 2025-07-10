@@ -12,6 +12,7 @@ SOURCES += \
     Backend.cpp \
     Info.cpp \
     chathandler.cpp \
+    chatroomui.cpp \
     clientchat.cpp \
     customer.cpp \
     lobbymainui.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     Backend.h \
     Info.h \
     chathandler.h \
+    chatroomui.h \
     clientchat.h \
     customer.h \
     lobbymainui.h \
@@ -38,6 +40,7 @@ HEADERS += \
     productUI.h
 
 FORMS += \
+    chatroomui.ui \
     lobbymainui.ui \
     lobbyui.ui \
     loginui.ui \

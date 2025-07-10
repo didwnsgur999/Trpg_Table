@@ -32,7 +32,6 @@ private:
 
     LoginUI* m_loginUI;
     ProductUI* m_productUI;
-    // lobbyUI* m_lobbyUI; // 기존 lobbyUI는 이제 LobbyMainUI의 자식으로 관리됩니다.
     LobbyMainUI* m_lobbyMainUI; // 로비 메인 UI (새로 추가)
 };
 #endif // MAINWINDOW_H

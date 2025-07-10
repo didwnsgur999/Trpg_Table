@@ -12,6 +12,7 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
     , ui(new Ui::LoginUI)
     , m_clientChat(clientChat)
 {
+    qDebug() << "[Client LoginUI] 생성자 호출 시작.";
     ui->setupUi(this);
 
     // ChatHandler의 로그인 결과 시그널 연결
@@ -22,22 +23,33 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
     connect(m_clientChat, &ClientChat::connectionEstablished, this, &LoginUI::on_serverConnectionEstablished);
     connect(m_clientChat, &ClientChat::connectionError, this, &LoginUI::on_serverConnectionError);
 
-    // UI에 서버 IP 및 Port 입력 필드 및 연결 상태 표시 필드 추가
-    // 초기에는 로그인 관련 UI 비활성화(서버연결 후 활성화되어야 함)
+    // showStatusMessage 시그널을 ui->connectionStatusLabel 업데이트에 연결
+    connect(this, &LoginUI::showStatusMessage, this, [this](const QString& message, bool isError){
+        ui->connectionStatusLabel->setText(message); // <-- connectionStatusLabel 사용
+        // 오류 메시지일 경우 텍스트 색상 변경 등 추가 UI 처리 가능
+        if (isError) {
+            ui->connectionStatusLabel->setStyleSheet("color: red;");
+        } else {
+            ui->connectionStatusLabel->setStyleSheet("color: black;");
+        }
+    });
+
+    // 초기 UI 상태 설정: 연결 전에는 로그인 관련 UI 비활성화
     ui->usernameLineEdit->setEnabled(false);
     ui->passwordLineEdit->setEnabled(false);
     ui->loginButton->setEnabled(false);
-    ui->registerButton->setEnabled(false);
+    ui->registerButton->setEnabled(false); // registerButton 활성화/비활성화 추가
 
     // 기본값 설정 - 서버 IP 및 포트
     ui->serverIpLineEdit->setText("127.0.0.1");
     ui->serverPortLineEdit->setText("30800");
 
     // 초기 상태 메시지
-    ui->connectionStatusLabel->setText("서버 연결 시도중...");
+    emit showStatusMessage("서버 연결 시도중...");
 
     // 프로그램 실행하자마자 바로 서버 연결 시도
     attemptConnectToServer();
+    qDebug() << "[Client LoginUI] 생성자 호출 종료.";
 }
 
 LoginUI::~LoginUI()
@@ -51,26 +63,24 @@ void LoginUI::attemptConnectToServer()
     QString ip = ui->serverIpLineEdit->text();
     int port = ui->serverPortLineEdit->text().toInt();
 
-    qDebug() << "attemptConnectToServer - 서버 연결 시도 ";
-    ui->connectionStatusLabel->setText("서버 연결 시도 중...");
+    qDebug() << "[Client LoginUI] attemptConnectToServer - 서버 연결 시도 IP:" << ip << " Port:" << port;
+    emit showStatusMessage("서버 연결 시도 중..."); // <-- showStatusMessage 시그널 사용
     m_clientChat->makeSocket(ip, port);
 }
 
 // 서버 연결 성공 시 호출될 슬롯
 void LoginUI::on_serverConnectionEstablished()
 {
-    qDebug() << "on_serverConnectionEstablished() - 서버 연결 성공";
-    ui->connectionStatusLabel->setText("서버 연결 성공!");
-    ui->connectionStatusLabel->setStyleSheet("color: green");
-    // 서버 정상 연결 시 녹색 텍스트 제공
+    qDebug() << "[Client LoginUI] on_serverConnectionEstablished() - 서버 연결 성공";
+    emit showStatusMessage("서버 연결 성공!", false); // <-- showStatusMessage 시그널 사용
 
     // 연결 성공 시 로그인 관련 UI 활성화
     ui->usernameLineEdit->setEnabled(true);
     ui->passwordLineEdit->setEnabled(true);
     ui->loginButton->setEnabled(true);
-    ui->registerButton->setEnabled(true);
-    ui->serverIpLineEdit->setEnabled(false); // 서버 연결관련 비활성화
-    ui->serverPortLineEdit->setEnabled(false);
+    ui->registerButton->setEnabled(true); // registerButton 활성화
+    ui->serverIpLineEdit->setEnabled(false); // serverIpLineEdit 비활성화
+    ui->serverPortLineEdit->setEnabled(false); // serverPortLineEdit 비활성화
 }
 
 // 서버 연결 오류 발생 시 호출될 슬롯
@@ -91,29 +101,31 @@ void LoginUI::on_serverConnectionError(QAbstractSocket::SocketError socketError)
         errorMessage = "네트워크 오류 발생";
         break;
     case QAbstractSocket::UnknownSocketError:
-        errorMessage = "알 수 없는 서버 오류 발생" + m_clientChat->getSocketErrorString();
+    default: // 모든 다른 오류를 처리
+        errorMessage = "알 수 없는 서버 오류 발생: " + m_clientChat->getSocketErrorString();
         break;
     }
-    ui->connectionStatusLabel->setText("연결 실패" + errorMessage);
-    ui->connectionStatusLabel->setStyleSheet("color: red;"); // 실패 시 빨간 텍스트
+    emit showStatusMessage("연결 실패: " + errorMessage, true); // <-- showStatusMessage 시그널 사용
 
     QMessageBox::critical(this, "서버 연결 오류", errorMessage);
-    qDebug() << "서버 연결 오류: " << errorMessage;
+    qDebug() << "[Client LoginUI] 서버 연결 오류: " << errorMessage;
 
     // 연결 실패 시 로그인 관련 UI 비활성화 유지
     ui->usernameLineEdit->setEnabled(false);
     ui->passwordLineEdit->setEnabled(false);
     ui->loginButton->setEnabled(false);
-    ui->registerButton->setEnabled(false);
-    ui->serverIpLineEdit->setEnabled(true);
-    ui->serverPortLineEdit->setEnabled(true);
+    ui->registerButton->setEnabled(false); // registerButton 비활성화
+    ui->serverIpLineEdit->setEnabled(true); // serverIpLineEdit 활성화
+    ui->serverPortLineEdit->setEnabled(true); // serverPortLineEdit 활성화
 }
 
 void LoginUI::on_loginButton_clicked()
 {
+    qDebug() << "[Client LoginUI] 로그인 버튼 클릭.";
     // 서버 미연결 시 로그인 시도 불가
     if(!m_clientChat->isConnected()){
         QMessageBox::warning(this, "로그인 오류", "서버에 연결 하세요");
+        qDebug() << "[Client LoginUI] 오류: 서버 미연결, 로그인 시도 불가.";
         return;
     }
 
@@ -127,42 +139,23 @@ void LoginUI::on_loginButton_clicked()
 
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
-    qDebug() << "로그인 요청 전송: " << doc.toJson(QJsonDocument::Compact);
-
-    /* 일단 무조건 로그인 화면으로 넘어가도록 주석 처리한 상황!
-    // 사용자 입력 유효성 검사
-    if (username.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, "로그인 오류", "아이디 또는 비밀번호를 입력해주세요.");
-        return; // 이 경우 함수 종료
-    }*/
-
-    // 현재 이 코드는 소켓이 연결되지 않아 프로그램 충돌의 원인이 되어 프로그램 종료되니까
-    // 나중에 서버 연결 로직이 로그인 전에 확립되면 다시 활성화할 것!! 잊지 말기!
-    /*
-    QJsonObject obj;
-    obj["cmd"] = "login";
-    obj["cName"] = username;
-    obj["cPwd"] = password;
-
-    QJsonDocument doc(obj);
-    m_clientChat->sendData(doc); // 이 호출이 현재 충돌의 원인
-    qDebug() << "로그인 요청 전송: " << doc.toJson(QJsonDocument::Compact);
-    */
-    // ------------------------------------------------------------------
-
-    // 서버 연결 상태와 관계없이 로비 화면으로 즉시 전환하기 위한 코드
-    // emit requestPageChange(1);
+    qDebug() << "[Client LoginUI] 로그인 요청 전송: " << doc.toJson(QJsonDocument::Compact);
 }
 
-// handleLoginResult 함수는 서버가 응답을 보내야 호출되므로,
-// 위에서 즉시 페이지를 전환하는 임시 로직에서는 직접적인 영향없음
-// 나중에 서버 인증 로직이 완성되면 handleLoginResult를 통해 페이지를 전환하도록 변경해야 함!!
 void LoginUI::handleLoginResult(bool success, const QString& message)
 {
+    qDebug() << "[Client LoginUI] handleLoginResult 호출됨. 성공: " << success << ", 메시지: " << message;
     if (success) {
         QMessageBox::information(this, "로그인 성공", "환영합니다, " + ui->usernameLineEdit->text() + "님!");
-        emit requestPageChange(1);
+        emit loginSuccess(); // 로그인 성공 시 시그널 방출
+        emit requestPageChange(1); // 로그인 성공 시 로비 메인 UI (인덱스 1)로 전환
     } else {
         QMessageBox::warning(this, "로그인 실패", "로그인 실패: " + message);
+        // 로그인 실패 시 다시 입력할 수 있도록 활성화
+        ui->usernameLineEdit->setEnabled(true);
+        ui->passwordLineEdit->setEnabled(true);
+        ui->loginButton->setEnabled(true);
+        ui->registerButton->setEnabled(true); // registerButton 활성화
+        emit showStatusMessage(QString("로그인 실패: %1").arg(message), true);
     }
 }
