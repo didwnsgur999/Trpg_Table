@@ -6,14 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>600</height>
+    <width>285</width>
+    <height>360</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Chat Room</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="currentRoomNameLabel">
+     <property name="text">
+      <string>현재 방</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QTextEdit" name="chatTextEdit">
      <property name="readOnly">

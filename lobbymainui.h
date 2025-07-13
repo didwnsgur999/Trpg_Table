@@ -13,8 +13,12 @@
 #include <QJsonArray>
 
 #include "clientchat.h"
+#include "roomlistui.h"
 #include "chatroomui.h" // 새로 생성된 ChatRoomUI 포함
 
+namespace Ui{ // Ui파일과 연결하기 위한 자동생성 클래스(알아서 추가됨)
+class LobbyMainUI;
+}
 class LobbyMainUI : public QWidget
 {
     Q_OBJECT
@@ -25,6 +29,9 @@ public:
 
     void initializeLobby();
 
+public slots:
+    void changePage(int index);
+
 signals:
     void requestPageChange(int index);
 
@@ -32,41 +39,24 @@ private slots:
     void on_goToShopButton_clicked();
     void on_goToMapButton_clicked();
 
-    void on_createChatRoomButton_clicked();
-    void on_enterChatRoomButton_clicked(); // 입장/나가기 겸용 버튼 슬롯
+    //void on_createChatRoomButton_clicked();
+    //void on_enterChatRoomButton_clicked(); // 입장/나가기 겸용 버튼 슬롯
     void on_exitChatRoomButton_clicked(); // 실제 UI 버튼은 없지만, 로직 분리를 위해 유지
 
     void requestRoomList();
-    void updateRoomList(const QJsonArray& roomList);
+    //void updateRoomList(const QJsonArray& roomList);
     void handleRoomCreationResult(bool success, const QString& message);
     void handleRoomJoinResult(bool success, const QString& message, const QString& roomName);
-    void handleRoomLeaveResult(bool success, const QString& message);
+    //void handleRoomLeaveResult(bool success, const QString& message);
 
     void sendJoinRoomRequest(const QString& roomName);
 
 private:
     ClientChat* m_clientChat;
-
-    QSplitter* m_mainSplitter;
-
-    QWidget* m_leftPaneWidget;
-    QStackedWidget* m_leftStackedWidget;
-    QWidget* m_mapDisplayWidget;
-    QWidget* m_shopWidget;
-    QPushButton* m_leftShopButton;
-    QPushButton* m_leftMapButton;
-
-    QWidget* m_rightPaneWidget;
-    QLabel* m_welcomeLabel;
-    QStackedWidget* m_rightStackedWidget;
-    QWidget* m_chatRoomListWidget;
-    ChatRoomUI* m_currentChatRoomUI; // <-- lobbyUI 대신 ChatRoomUI으로 변경!
-    QPushButton* m_enterChatRoomButton; // 입장/나가기 겸용 버튼
-
-    QListWidget* m_roomListWidget;
-    QPushButton* m_refreshRoomListButton;
-    QLineEdit* m_createRoomNameLineEdit;
-    QPushButton* m_createRoomButton;
+    Ui::LobbyMainUI* ui; // .ui 파일을 통해 만들어진 자동 생성 UI멤버들을 나의 클래스에서 접근하기 위한 다리 역할
+    RoomListUI* m_roomListUI;
+    ChatRoomUI* m_chatRoomUI;
+    ChatHandler* m_chatHandler;
 };
 
 #endif // LOBBYMAINUI_H
