@@ -30,7 +30,7 @@ void RoomListUI::on_enterRoomButton_clicked()
     QString fullText = selectedItem->text();
     QString roomName = fullText.left(fullText.indexOf(" ("));
 
-    sendJoinRoomRequest(roomName);
+    emit joinRoomRequested(roomName);
 }
 
 
@@ -46,11 +46,55 @@ void RoomListUI::on_createRoomButton_clicked()
         return;
     }
 
+    ui->createRoomLineEdit->clear();
     QJsonObject obj;
     obj["cmd"] = "add_r";
     obj["rName"] = roomName;
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
-    emit requestPageChange(1);
+    emit createRoomRequested(roomName);
 }
 
+// 서버에 채팅방 목록 요청
+void RoomListUI::requestRoomList()
+{
+    if(!m_clientChat->isConnected()){
+        QMessageBox::warning(this, "오류", "서버 미연결로 채팅방 목록 가져올 수 없습니다!");
+        return;
+    }
+    QJsonObject obj;
+    obj["cmd"] = "list_r"; // 서버 프로토콜에 맞게 "list_r" 사용
+    QJsonDocument doc(obj);
+    m_clientChat->sendData(doc);
+    qDebug() << "채팅방 목록 요청 전송: " << doc.toJson(QJsonDocument::Compact);
+}
+
+void RoomListUI::handleRoomCreationResult(bool success, const QString &message)
+{
+    if(success){
+        QString roomName = ui->createRoomLineEdit->text().trimmed();
+        ui->createRoomLineEdit->clear();
+
+        emit joinRoomRequested(roomName); // 그 이름 갖고 자동으로 입장
+    } else{
+        qDebug() << "설마 안만들어짐??";
+    }
+}
+
+void RoomListUI::handleRoomJoinResult(bool success, const QString &message, const QString &roomName)
+{
+    // 일단 아직 목록 누르는 거 미구현
+}
+
+void RoomListUI::updateRoomList(const QJsonArray &roomList)
+{
+    ui->chatListWidget->clear();
+    for (const auto& val : roomList) {
+        if (val.isObject()) {
+            QJsonObject obj = val.toObject();
+            QString roomName = obj["name"].toString();
+            int memberCount = obj["cnt"].toInt();
+            ui->chatListWidget->addItem(QString("%1 (%2명)").arg(roomName).arg(memberCount));
+        }
+    }
+}

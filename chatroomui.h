@@ -28,12 +28,13 @@ public:
     QLabel* m_currentRoomNameLabel; // public으로 유지
 
 signals:
-    void requestLeaveRoom(const QString& roomName); // 방 나가기 요청 시그널 (LobbyMainUI로 전달)
+    void requestLeaveRoom(); // 방 나가기 요청 시그널 (LobbyMainUI로 전달)
 
 private slots:
     void on_sendButton_clicked(); // 메시지 전송 버튼 클릭 시
     void on_chatreceived(const QString& msg); // 채팅 메시지 수신 시
     void on_backToListButton_clicked(); // "목록으로 돌아가기" 버튼 클릭 시 슬롯
+    void handleRoomLeaveResult(bool success, const QString& message);
 
 private:
     Ui::ChatRoomUI *ui;

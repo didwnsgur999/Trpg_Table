@@ -1,14 +1,12 @@
 #include "lobbymainui.h"
 #include "ui_lobbymainui.h"
-#include <QMessageBox> // QMessageBox 사용을 위해 추가
 #include <QDebug> // qDebug() 사용을 위해 추가
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QListWidgetItem>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
+
 #include "roomlistui.h"
+#include "chatroomui.h"
 
 LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)
@@ -17,10 +15,6 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
 {
     // 0711 .cpp 파일과 .ui파일 분리
     ui->setupUi(this); // new 적고 setupUi까지 해줘야 메모리에 올라감
-
-    // chatHandler 실질적인 handler 받아오려고 (그냥 new하면 가짜 객체에 불과)
-    m_chatHandler = m_clientChat->getChatHandler(); // 실질적인 handler 받아오기
-    connect(m_chatHandler, &ChatHandler::addRoomResult, this, &LobbyMainUI::handleRoomCreationResult); // 미리 해보기
 
     m_roomListUI = new RoomListUI(m_clientChat, this);
     m_chatRoomUI = new ChatRoomUI(m_clientChat, this);
@@ -31,42 +25,32 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
     // 찻 화면은 룸리스트 보여주는 거
     ui->rightStackedWidget->setCurrentIndex(0);
 
-    // 하위에서 버튼 누르면 상위에서 페이지 바뀌어야 하는데 객체 책임을 위해 분리
-    connect(m_roomListUI, &RoomListUI::requestPageChange, this, &LobbyMainUI::changePage);
-    connect(m_chatRoomUI, &ChatRoomUI::requestLeaveRoom, this, &LobbyMainUI::on_exitChatRoomButton_clicked);
-
+    // 로비메인유아이에서 시그널 연결
+    connect(m_roomListUI, &RoomListUI::createRoomRequested, this, &LobbyMainUI::changePage);
+    connect(m_roomListUI, &RoomListUI::joinRoomRequested, this, &LobbyMainUI::changePage);
+    connect(m_chatRoomUI, &ChatRoomUI::requestLeaveRoom, [=](){
+        ui->rightStackedWidget->setCurrentIndex(0);
+    });
 }
 
 LobbyMainUI::~LobbyMainUI()
 {
-    // 자식 위젯들은 부모 위젯 (QSplitter, QStackedWidget 등)이 소멸될 때 함께 소멸
+    delete ui;
 }
 
-void LobbyMainUI::changePage(int index)
+void LobbyMainUI::changePage(const QString& roomName)
 {
-    ui->rightStackedWidget->setCurrentIndex(index);
+    ui->rightStackedWidget->setCurrentIndex(1);
+    m_chatRoomUI->setRoomName(roomName);
 }
 
 // 로비 UI가 활성화될 때 호출될 초기화 함수 구현
 void LobbyMainUI::initializeLobby()
 {
-    qDebug() << "LobbyMainUI::initializeLobby() 호출: 채팅방 목록 요청";
-    requestRoomList(); // 로비 화면이 준비되면 채팅방 목록 요청
+    emit m_roomListUI->requestRoomList();
 }
 
-// 왼쪽 패널 슬롯
-void LobbyMainUI::on_goToShopButton_clicked()
-{
-    qDebug() << "상점 가기 버튼 클릭";
-    ui->leftStackedWidget->setCurrentIndex(1); // 상점 위젯으로 전환
-}
-
-void LobbyMainUI::on_goToMapButton_clicked()
-{
-    qDebug() << "맵으로 돌아가기 버튼 클릭";
-    ui->leftStackedWidget->setCurrentIndex(0); // 맵 위젯으로 전환
-}
-
+/*
 // 채팅방 목록 및 생성 관련 슬롯 구현
 // 서버에 채팅방 목록 요청
 void LobbyMainUI::requestRoomList()
@@ -81,7 +65,7 @@ void LobbyMainUI::requestRoomList()
     m_clientChat->sendData(doc);
     qDebug() << "채팅방 목록 요청 전송: " << doc.toJson(QJsonDocument::Compact);
 }
-
+*/
 /*
 // 서버로부터 받은 채팅방 목록으로 UI 업데이트
 void LobbyMainUI::updateRoomList(const QJsonArray &roomList)
@@ -122,7 +106,7 @@ void LobbyMainUI::on_createChatRoomButton_clicked()
 }
 */
 
-
+/*
 // 방 생성 결과 처리 슬롯
 void LobbyMainUI::handleRoomCreationResult(bool success, const QString& message)
 {
@@ -157,6 +141,24 @@ void LobbyMainUI::sendJoinRoomRequest(const QString& roomName)
     qDebug() << "채팅방 입장 요청 전송: " << doc.toJson(QJsonDocument::Compact);
 }
 
+// 생성 요청용 (RoomListUI에서 createRoomRequested 나오면 이걸 호출)
+void LobbyMainUI::sendCreateRoomRequest(const QString& roomName)
+{
+    qDebug() << "[LobbyMainUI] sendCreateRoomRequest: " << roomName;
+
+    if (!m_clientChat->isConnected()) {
+        QMessageBox::warning(this, "오류", "서버에 연결되어 있지 않습니다.");
+        return;
+    }
+
+    QJsonObject obj;
+    obj["cmd"] = "add_r";
+    obj["rName"] = roomName;
+    QJsonDocument doc(obj);
+    m_clientChat->sendData(doc);
+    qDebug() << "채팅방 생성 요청 전송: " << doc.toJson(QJsonDocument::Compact);
+}
+
 /*
 // 방 입장 버튼 클릭 시 (오직 입장 기능만 수행)
 void LobbyMainUI::on_enterChatRoomButton_clicked()
@@ -175,7 +177,7 @@ void LobbyMainUI::on_enterChatRoomButton_clicked()
 }
 */
 
-
+/*
 // 방 입장 결과 처리 슬롯
 void LobbyMainUI::handleRoomJoinResult(bool success, const QString& message, const QString& roomName)
 {

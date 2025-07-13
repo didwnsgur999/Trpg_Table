@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QDebug>
+#include <QMessageBox>
 
 ChatRoomUI::ChatRoomUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)
@@ -15,6 +16,10 @@ ChatRoomUI::ChatRoomUI(ClientChat* clientChat, QWidget *parent)
 
     // ChatHandler로부터 채팅 메시지 수신 연결
     connect(m_clientChat->getChatHandler(), &ChatHandler::chatreceived, this, &ChatRoomUI::on_chatreceived);
+    // 챗룸유아이에서 나가는 것도
+    connect(m_clientChat->getChatHandler(), &ChatHandler::leaveRoomResult, this, &ChatRoomUI::handleRoomLeaveResult);
+    // 확인용
+    connect(ui->backToListButton, &QPushButton::clicked, this, &ChatRoomUI::on_backToListButton_clicked);
 }
 
 ChatRoomUI::~ChatRoomUI()
@@ -24,7 +29,6 @@ ChatRoomUI::~ChatRoomUI()
 
 void ChatRoomUI::setRoomName(const QString &name)
 {
-    qDebug() << "setRoomName찍히는 지 확인" << name;
     if (ui->currentRoomNameLabel) {
         ui->currentRoomNameLabel->setText("현재 방: " + name);
     }
@@ -65,7 +69,28 @@ void ChatRoomUI::on_chatreceived(const QString &msg)
 // 새로 추가된 "목록으로 돌아가기" 버튼 클릭 슬롯
 void ChatRoomUI::on_backToListButton_clicked()
 {
-    qDebug() << "[Client ChatRoomUI] 목록으로 돌아가기 버튼 클릭.";
     QString currentRoomName = ui->currentRoomNameLabel->text().replace("현재 방: ", "");
-    emit requestLeaveRoom(currentRoomName); // LobbyMainUI로 방 나가기 요청 시그널 방출
+
+    if(currentRoomName.isEmpty()){
+        QMessageBox::warning(this, "오류", "현재 입장한 채팅방이 없습니다.");
+        return;
+    }
+
+    QJsonObject obj;
+    obj["cmd"] = "leave_r";
+    obj["rName"] = currentRoomName;
+    QJsonDocument doc(obj);
+    m_clientChat->sendData(doc);
+}
+
+void ChatRoomUI::handleRoomLeaveResult(bool success, const QString &message)
+{
+    if(success){
+        emit requestLeaveRoom();
+
+        // 초기화
+        setRoomName("없음");
+        ui->messageLineEdit->clear();
+        ui->chatTextEdit->clear();
+    }
 }
