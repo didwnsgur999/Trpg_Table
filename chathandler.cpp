@@ -9,8 +9,6 @@ ChatHandler::ChatHandler(QObject* parent)
 {}
 
 void ChatHandler::getByteData(QByteArray& data){
-    qDebug() << "Received raw data:" << data; // 수신된 전체 데이터 읽기
-
     // QByteArray가 여러 JSON 객체를 포함할 수 있으므로, 줄바꿈으로 분리하여 처리
     QList<QByteArray> messages = data.split('\n');
     for (const QByteArray& msg : messages) {
@@ -62,5 +60,11 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
         bool success = (obj.value("text").toString() == "success");
         QString message = obj.value("text").toString();
         emit leaveRoomResult(success, message);
+    } else if (cmd=="ret_list_p"){
+        QJsonArray products = obj.value("productlist").toArray();
+        emit productListReceived(products);
+    } else if (cmd=="ret_add_o"){
+        bool success = (obj.value("text").toString() == "success");
+        qDebug()<<"order추가 성공 : "<<success;
     }
 }
