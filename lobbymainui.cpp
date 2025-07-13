@@ -136,7 +136,6 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
     connect(m_clientChat->getChatHandler(), &ChatHandler::joinRoomResult, this, &LobbyMainUI::handleRoomJoinResult);
     connect(m_clientChat->getChatHandler(), &ChatHandler::leaveRoomResult, this, &LobbyMainUI::handleRoomLeaveResult);
 
-
     // 초기 채팅방 목록 요청
     requestRoomList();
 }
@@ -169,7 +168,7 @@ void LobbyMainUI::requestRoomList()
         return;
     }
     QJsonObject obj;
-    obj["cmd"] = "list_rooms"; // 새로운 프로토콜 list_room
+    obj["cmd"] = "list_r"; // 새로운 프로토콜 list_room
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
     qDebug() << "채팅방 목록 요청 전송";
@@ -184,7 +183,7 @@ void LobbyMainUI::updateRoomList(const QJsonArray &roomList)
         if(value.isObject()){
             QJsonObject roomObj = value.toObject();
             QString roomName = roomObj["name"].toString();
-            int memberCount = roomObj["member_count"].toInt();
+            int memberCount = roomObj["cnt"].toInt();
             m_roomListWidget->addItem(QString("%1 (%2명").arg(roomName).arg(memberCount));
         }
     }
