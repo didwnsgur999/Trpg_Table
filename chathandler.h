@@ -26,6 +26,9 @@ signals:
     void joinRoomResult(bool success, const QString& messsage, const QString& roomName); // 방입장 결과
     void leaveRoomResult(bool success, const QString& message); // 방나가기 결과
 
+    // 0713 추가된 시그널
+    void productListReceived(const QJsonArray& products);
+
 private:
     // Json 파싱 후 처리하는 헬퍼 함수
     void processJsonObject(const QJsonObject& obj);

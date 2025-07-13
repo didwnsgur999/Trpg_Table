@@ -4,8 +4,6 @@
 #include "ui_roomlistui.h"
 #include "clientchat.h"
 
-#include "ui_lobbymainui.h"
-
 RoomListUI::RoomListUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::RoomListUI)

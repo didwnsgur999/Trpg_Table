@@ -4,6 +4,7 @@
 #include <QString>
 #include <QJsonObject>
 #include <QSharedPointer> // shared_ptr, make_shared
+#include <QPixmap>
 class Product : public Info{
 public:
     //기본생성자가 있어야
@@ -27,11 +28,14 @@ public:
     int getPrice() const { return m_price; }
     void setCnt(int cnt) { m_cnt = cnt; }
     int getCnt() const { return m_cnt; }
+    void setImage(const QPixmap& image) {m_image = image;}
+    QPixmap getImage() const {return m_image;}
 
 private:
     int m_id;
     QString m_name;
     int m_price;
     int m_cnt;
+    QPixmap m_image;
 };
 #endif // PRODUCT_H

@@ -146,6 +146,7 @@ void LoginUI::handleLoginResult(bool success, const QString& message)
 {
     qDebug() << "[Client LoginUI] handleLoginResult 호출됨. 성공: " << success << ", 메시지: " << message;
     if (success) {
+        //여기에서 username이랑 password 정리해서 만들어야됨.
         QMessageBox::information(this, "로그인 성공", "환영합니다, " + ui->usernameLineEdit->text() + "님!");
         emit loginSuccess(); // 로그인 성공 시 시그널 방출
         emit requestPageChange(1); // 로그인 성공 시 로비 메인 UI (인덱스 1)로 전환

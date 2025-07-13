@@ -18,12 +18,17 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
 
     m_roomListUI = new RoomListUI(m_clientChat, this);
     m_chatRoomUI = new ChatRoomUI(m_clientChat, this);
-
+    m_storeUI = new storeUI(m_clientChat,this);
+    m_roomDisplayUI = new RoomDisplayUI(m_clientChat,this);
     // 스택 위젯에 UI 페이지 추가
     ui->rightStackedWidget->addWidget(m_roomListUI);
     ui->rightStackedWidget->addWidget(m_chatRoomUI);
+    ui->leftTabWidget->addTab(m_storeUI,tr("상점"));
+    ui->leftTabWidget->addTab(m_roomDisplayUI,tr("방"));
+
     // 찻 화면은 룸리스트 보여주는 거
     ui->rightStackedWidget->setCurrentIndex(0);
+    ui->leftTabWidget->setCurrentIndex(0);
 
     // 로비메인유아이에서 시그널 연결
     connect(m_roomListUI, &RoomListUI::createRoomRequested, this, &LobbyMainUI::changePage);
@@ -42,6 +47,10 @@ void LobbyMainUI::changePage(const QString& roomName)
 {
     ui->rightStackedWidget->setCurrentIndex(1);
     m_chatRoomUI->setRoomName(roomName);
+}
+void LobbyMainUI::changeLeftPage(int index)
+{
+    ui->leftTabWidget->setCurrentIndex(index);
 }
 
 // 로비 UI가 활성화될 때 호출될 초기화 함수 구현
@@ -110,16 +119,16 @@ void LobbyMainUI::on_createChatRoomButton_clicked()
 // 방 생성 결과 처리 슬롯
 void LobbyMainUI::handleRoomCreationResult(bool success, const QString& message)
 {
-    if (success) {
-        //QMessageBox::information(this, "채팅방 생성", message);
-        QString createdRoomName = m_roomListUI->ui->createRoomNameLineEdit->text().trimmed();
-        m_roomListUI->ui->createRoomNameLineEdit->clear();
+    // if (success) {
+    //     //QMessageBox::information(this, "채팅방 생성", message);
+    //     QString createdRoomName = m_roomListUI->ui->createRoomNameLineEdit->text().trimmed();
+    //     m_roomListUI->ui->createRoomNameLineEdit->clear();
 
-        //requestRoomList(); // 방 생성 후 목록 갱신 요청
-        sendJoinRoomRequest(createdRoomName); // 방 생성 성공 시 바로 입장 요청
-    } else {
-        //QMessageBox::warning(this, "채팅방 생성 실패", message);
-    }
+    //     //requestRoomList(); // 방 생성 후 목록 갱신 요청
+    //     sendJoinRoomRequest(createdRoomName); // 방 생성 성공 시 바로 입장 요청
+    // } else {
+    //     //QMessageBox::warning(this, "채팅방 생성 실패", message);
+    // }
 }
 
 
@@ -261,4 +270,14 @@ void LobbyMainUI::handleRoomLeaveResult(bool success, const QString& message)
     }
 }
 */
+
+
+void LobbyMainUI::on_leftTabWidget_currentChanged(int index)
+{
+    if(index==0){
+
+    }else{
+
+    }
+}
 

@@ -18,7 +18,9 @@ public:
 private:
     int m_id;
     QString m_name;
-    int m_price;
+    QString m_pwd;
+    //제품 가지고 있어야됨.
+    QHash<QString, int> m_myProduct;
 };
 
 #endif // CUSTOMER_H
