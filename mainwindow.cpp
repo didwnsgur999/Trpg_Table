@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "productUI.h"
-// #include "lobbyui.h"     // 기존 lobbyUI는 이제 LobbyMainUI 안에서 사용되므로 여기서는 제거
 #include "loginui.h"
 #include "lobbymainui.h" // LobbyMainUI 포함
 #include "product.h"
@@ -31,8 +30,10 @@ MainWindow::MainWindow(QWidget *parent)
     // UI 페이지 전환을 위한 시그널-슬롯 연결
     connect(m_loginUI, &LoginUI::requestPageChange, this, &MainWindow::changePage);
     connect(m_productUI, &ProductUI::requestPageChange, this, &MainWindow::changePage);
-    // m_lobbyMainUI에서도 페이지 전환이 필요하다면 시그널을 추가하고 연결합니다.
-    // connect(m_lobbyMainUI, &LobbyMainUI::requestPageChange, this, &MainWindow::changePage);
+
+    // 로그인 성공 시 로비 메인 UI로 전환하고 초기화 함수 호출
+    connect(m_loginUI, &LoginUI::loginSuccess, m_lobbyMainUI, &LobbyMainUI::initializeLobby);
+    qDebug() << "[Client MainWindow] MainWindow 생성자 완료.";
 }
 
 MainWindow::~MainWindow()
@@ -42,10 +43,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::changePage(int index)
 {
+    qDebug() << "[Client MainWindow] 페이지 전환 요청: " << index;
     ui->UI_STACK->setCurrentIndex(index);
 }
 
-// for debug - 이 부분은 기존 코드 유지
 void MainWindow::on_ProductButton_clicked()
 {
     if(Backend::getInstance().saveJson("products.json", Backend::getInstance().getProducts())){

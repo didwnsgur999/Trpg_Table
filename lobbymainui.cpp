@@ -1,4 +1,5 @@
 #include "lobbymainui.h"
+#include "ui_lobbymainui.h"
 #include <QMessageBox> // QMessageBox 사용을 위해 추가
 #include <QDebug> // qDebug() 사용을 위해 추가
 #include <QVBoxLayout>
@@ -7,156 +8,58 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include "roomlistui.h"
 
 LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)
+    , ui(new Ui::LobbyMainUI)
     , m_clientChat(clientChat)
 {
-    // 메인 Splitter 생성 (2:1 분할 담당)
-    m_mainSplitter = new QSplitter(Qt::Horizontal, this);
+    // 0711 .cpp 파일과 .ui파일 분리
+    ui->setupUi(this); // new 적고 setupUi까지 해줘야 메모리에 올라감
 
-    // 왼쪽 패널 (맵/상점) 설정
-    m_leftPaneWidget = new QWidget(m_mainSplitter);
-    QVBoxLayout* leftLayout = new QVBoxLayout(m_leftPaneWidget);
+    // chatHandler 실질적인 handler 받아오려고 (그냥 new하면 가짜 객체에 불과)
+    m_chatHandler = m_clientChat->getChatHandler(); // 실질적인 handler 받아오기
+    connect(m_chatHandler, &ChatHandler::addRoomResult, this, &LobbyMainUI::handleRoomCreationResult); // 미리 해보기
 
-    m_leftStackedWidget = new QStackedWidget(m_leftPaneWidget);
+    m_roomListUI = new RoomListUI(m_clientChat, this);
+    m_chatRoomUI = new ChatRoomUI(m_clientChat, this);
+    m_storeUI = new storeUI(m_clientChat,this);
+    m_roomDisplayUI = new RoomDisplayUI(m_clientChat,this);
+    // 스택 위젯에 UI 페이지 추가
+    ui->rightStackedWidget->addWidget(m_roomListUI);
+    ui->rightStackedWidget->addWidget(m_chatRoomUI);
+    ui->leftTabWidget->addTab(m_storeUI,tr("상점"));
+    ui->leftTabWidget->addTab(m_roomDisplayUI,tr("방"));
 
-    // 맵 표시용 임시 위젯 (0번 인덱스)
-    m_mapDisplayWidget = new QWidget(m_leftStackedWidget);
-    QVBoxLayout* mapLayout = new QVBoxLayout(m_mapDisplayWidget);
-    QLabel* mapLabel = new QLabel("~~여기는 맵 화면~~", m_mapDisplayWidget);
-    mapLabel->setAlignment(Qt::AlignCenter);
-    mapLayout->addWidget(mapLabel);
+    // 찻 화면은 룸리스트 보여주는 거
+    ui->rightStackedWidget->setCurrentIndex(0);
+    ui->leftTabWidget->setCurrentIndex(0);
 
-    m_leftShopButton = new QPushButton("상점 가기", m_mapDisplayWidget);
-    connect(m_leftShopButton, &QPushButton::clicked, this, &LobbyMainUI::on_goToShopButton_clicked);
-    mapLayout->addWidget(m_leftShopButton);
-    m_leftStackedWidget->addWidget(m_mapDisplayWidget); // 0번 인덱스
-
-    // 상점 표시용 임시 위젯 (1번 인덱스)
-    m_shopWidget = new QWidget(m_leftStackedWidget);
-    QVBoxLayout* shopLayout = new QVBoxLayout(m_shopWidget);
-    QLabel* shopLabel = new QLabel("~~상점 화면~~", m_shopWidget);
-    shopLabel->setAlignment(Qt::AlignCenter);
-    shopLayout->addWidget(shopLabel);
-
-    m_leftMapButton = new QPushButton("맵으로 돌아가기", m_shopWidget);
-    connect(m_leftMapButton, &QPushButton::clicked, this, &LobbyMainUI::on_goToMapButton_clicked);
-    shopLayout->addWidget(m_leftMapButton);
-    m_leftStackedWidget->addWidget(m_shopWidget); // 1번 인덱스
-
-    leftLayout->addWidget(m_leftStackedWidget);
-    m_leftPaneWidget->setLayout(leftLayout); // 레이아웃 설정
-
-    // 오른쪽 패널 (채팅) 설정
-    m_rightPaneWidget = new QWidget(m_mainSplitter);
-    QVBoxLayout* rightLayout = new QVBoxLayout(m_rightPaneWidget);
-
-    // 상단: 환영합니다! 라벨
-    m_welcomeLabel = new QLabel("환영합니다!", m_rightPaneWidget); // 여기에 실제 사용자 이름을 받을 수 있도록 추후 수정
-    m_welcomeLabel->setAlignment(Qt::AlignCenter);
-    rightLayout->addWidget(m_welcomeLabel);
-    // m_createChatRoomButton = new QPushButton("채팅방 생성", m_rightPaneWidget);
-    // connect(m_createChatRoomButton, &QPushButton::clicked, this, &LobbyMainUI::on_createChatRoomButton_clicked);
-
-    // rightLayout->addWidget(m_welcomeLabel);
-    // rightLayout->addWidget(m_createChatRoomButton);
-
-    m_rightStackedWidget = new QStackedWidget(m_rightPaneWidget);
-
-    // 채팅방 목록 위젯 (0번 인덱스)
-    m_chatRoomListWidget = new QWidget(m_rightStackedWidget);
-    QVBoxLayout* chatListLayout = new QVBoxLayout(m_chatRoomListWidget);
-    // QLabel* chatListLabel = new QLabel("~~채팅방 목록~~", m_chatRoomListWidget);
-    // chatListLabel->setAlignment(Qt::AlignCenter);
-    chatListLayout->addWidget(new QLabel(" --- 현재 채팅방 목록 --- ", m_chatRoomListWidget));
-
-    // 채팅방 목록 QListWidget 추가
-    m_roomListWidget = new QListWidget(m_chatRoomListWidget);
-    chatListLayout->addWidget(m_roomListWidget);
-
-    // 채팅방 목록 새로고침 버튼
-    m_refreshRoomListButton = new QPushButton("새로고침", m_chatRoomListWidget); // 부모 위젯 지정
-    // connect(m_refreshRoomListButton, &QPushButton::clicked, this, m_chatRoomListWidget);
-    connect(m_refreshRoomListButton, &QPushButton::clicked, this, &LobbyMainUI::requestRoomList);
-    chatListLayout->addWidget(m_refreshRoomListButton);
-
-    // 채팅방 생성 UI (입력 필드 + 버튼)
-    QHBoxLayout* createRoomLayout = new QHBoxLayout();
-    m_createRoomNameLineEdit = new QLineEdit(m_chatRoomListWidget);
-    m_createRoomNameLineEdit->setPlaceholderText("새 채팅방 이름 입력");
-    m_createRoomButton = new QPushButton("채팅방 만들기", m_chatRoomListWidget);
-    connect(m_createRoomButton, &QPushButton::clicked, this, &LobbyMainUI::on_createChatRoomButton_clicked);
-    createRoomLayout->addWidget(m_createRoomNameLineEdit);
-    createRoomLayout->addWidget(m_createRoomButton);
-    chatListLayout->addLayout(createRoomLayout);
-
-    // 채팅방 입장 버튼
-    m_enterChatRoomButton = new QPushButton("선택한 채팅방 입장", m_chatRoomListWidget);
-    connect(m_enterChatRoomButton, &QPushButton::clicked, this, &LobbyMainUI::on_enterChatRoomButton_clicked);
-    chatListLayout->addWidget(m_enterChatRoomButton);
-
-    m_rightStackedWidget->addWidget(m_chatRoomListWidget); // 0번 인덱스 (채팅방 목록)
-
-    // 기존 lobbyUI를 채팅방 상세 화면으로 활용 (1번 인덱스)
-    m_currentChatRoomUI = new lobbyUI(m_clientChat, m_rightStackedWidget);
-    // lobbyUI에서 '나가기' 시그널이 있다면 여기에 연결
-    // connect(m_currentChatRoomUI, &lobbyUI::leaveChatRoom, this, &LobbyMainUI::on_exitChatRoomButton_clicked);
-    m_rightStackedWidget->addWidget(m_currentChatRoomUI); // 1번 인덱스 (기존 lobbyUI)
-
-    // 채팅방 나가기 버튼 (채팅방 상세 화면에 표시)
-    m_exitChatRoomButton = new QPushButton("채팅방 나가기", m_currentChatRoomUI); // m_currentChatRoomUI의 자식으로
-    m_exitChatRoomButton->setVisible(false); // 초기에는 숨김
-    connect(m_exitChatRoomButton, &QPushButton::clicked, this, &LobbyMainUI::on_exitChatRoomButton_clicked);
-    // m_currentChatRoomUI의 레이아웃에 m_exitChatRoomButton을 추가해야 함 (lobbyUI.ui 또는 lobbyUI.cpp에서)
-    // 현재는 LobbyMainUI에서 직접 제어하므로, m_currentChatRoomUI의 레이아웃에 추가하는 로직이 필요.
-    // 예: m_currentChatRoomUI->layout()->addWidget(m_exitChatRoomButton); (단, m_currentChatRoomUI에 레이아웃이 설정되어 있어야 함)
-    // 더 나은 방법: m_currentChatRoomUI 내부에서 나가기 버튼을 관리하고 시그널을 통해 LobbyMainUI에 알림.
-
-    rightLayout->addWidget(m_rightStackedWidget);
-    m_rightPaneWidget->setLayout(rightLayout); // 레이아웃 설정
-
-    // Splitter에 패널 추가 및 2:1 비율 설정
-    m_mainSplitter->addWidget(m_leftPaneWidget);
-    m_mainSplitter->addWidget(m_rightPaneWidget);
-
-    // 초기 크기 비율 설정 (대략 2:1)
-    QList<int> initialSizes;
-    initialSizes << 500 << 250; // 초기 크기 비율 (예시)
-    m_mainSplitter->setSizes(initialSizes);
-
-    // LobbyMainUI의 메인 레이아웃에 Splitter 추가
-    QVBoxLayout* mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(m_mainSplitter);
-    setLayout(mainLayout);
-
-    // ChatHandler로부터 시그널 연결
-    connect(m_clientChat->getChatHandler(), &ChatHandler::roomListReceived, this, &LobbyMainUI::updateRoomList);
-    connect(m_clientChat->getChatHandler(), &ChatHandler::addRoomResult, this, &LobbyMainUI::handleRoomCreationResult);
-    connect(m_clientChat->getChatHandler(), &ChatHandler::joinRoomResult, this, &LobbyMainUI::handleRoomJoinResult);
-    connect(m_clientChat->getChatHandler(), &ChatHandler::leaveRoomResult, this, &LobbyMainUI::handleRoomLeaveResult);
-
-    // 초기 채팅방 목록 요청
-    requestRoomList();
+    // 하위에서 버튼 누르면 상위에서 페이지 바뀌어야 하는데 객체 책임을 위해 분리
+    connect(m_roomListUI, &RoomListUI::requestPageChange, this, &LobbyMainUI::changePage);
+    connect(m_chatRoomUI, &ChatRoomUI::requestLeaveRoom, this, &LobbyMainUI::on_exitChatRoomButton_clicked);
 }
 
 LobbyMainUI::~LobbyMainUI()
 {
-    // UI 파일이 없으므로 'delete ui;'는 필요 없음
     // 자식 위젯들은 부모 위젯 (QSplitter, QStackedWidget 등)이 소멸될 때 함께 소멸
 }
 
-// 왼쪽 패널 슬롯
-void LobbyMainUI::on_goToShopButton_clicked()
+void LobbyMainUI::changePage(int index)
 {
-    qDebug() << "상점 가기 버튼 클릭";
-    m_leftStackedWidget->setCurrentIndex(1); // 상점 위젯으로 전환
+    ui->rightStackedWidget->setCurrentIndex(index);
+}
+void LobbyMainUI::changeLeftPage(int index)
+{
+    ui->leftTabWidget->setCurrentIndex(index);
 }
 
-void LobbyMainUI::on_goToMapButton_clicked()
+// 로비 UI가 활성화될 때 호출될 초기화 함수 구현
+void LobbyMainUI::initializeLobby()
 {
-    qDebug() << "맵으로 돌아가기 버튼 클릭";
-    m_leftStackedWidget->setCurrentIndex(0); // 맵 위젯으로 전환
+    qDebug() << "LobbyMainUI::initializeLobby() 호출: 채팅방 목록 요청";
+    requestRoomList(); // 로비 화면이 준비되면 채팅방 목록 요청
 }
 
 // 채팅방 목록 및 생성 관련 슬롯 구현
@@ -168,12 +71,13 @@ void LobbyMainUI::requestRoomList()
         return;
     }
     QJsonObject obj;
-    obj["cmd"] = "list_r"; // 새로운 프로토콜 list_room
+    obj["cmd"] = "list_r"; // 서버 프로토콜에 맞게 "list_r" 사용
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
-    qDebug() << "채팅방 목록 요청 전송";
+    qDebug() << "채팅방 목록 요청 전송: " << doc.toJson(QJsonDocument::Compact);
 }
 
+/*
 // 서버로부터 받은 채팅방 목록으로 UI 업데이트
 void LobbyMainUI::updateRoomList(const QJsonArray &roomList)
 {
@@ -184,19 +88,21 @@ void LobbyMainUI::updateRoomList(const QJsonArray &roomList)
             QJsonObject roomObj = value.toObject();
             QString roomName = roomObj["name"].toString();
             int memberCount = roomObj["cnt"].toInt();
-            m_roomListWidget->addItem(QString("%1 (%2명").arg(roomName).arg(memberCount));
+            m_roomListWidget->addItem(QString("%1 (%2명)").arg(roomName).arg(memberCount));
         }
     }
 }
+*/
 
-// 채팅방 생성 버튼 클릭 시 (on_createChatRoomButton_clicked 구현)
+/*
+// 채팅방 생성 버튼 클릭 시
 void LobbyMainUI::on_createChatRoomButton_clicked()
 {
     if (!m_clientChat->isConnected()) {
         QMessageBox::warning(this, "오류", "서버에 연결되어 있지 않습니다.");
         return;
     }
-    QString roomName = m_createRoomNameLineEdit->text().trimmed();
+    QString roomName = ui->createRoomNameLineEdit->text().trimmed();
     if (roomName.isEmpty()) {
         QMessageBox::warning(this, "채팅방 생성", "채팅방 이름을 입력해주세요.");
         return;
@@ -209,73 +115,105 @@ void LobbyMainUI::on_createChatRoomButton_clicked()
     m_clientChat->sendData(doc);
     qDebug() << "채팅방 생성 요청 전송: " << doc.toJson(QJsonDocument::Compact);
 }
+*/
+
 
 // 방 생성 결과 처리 슬롯
 void LobbyMainUI::handleRoomCreationResult(bool success, const QString& message)
 {
-    if (success) {
-        QMessageBox::information(this, "채팅방 생성", message);
-        m_createRoomNameLineEdit->clear(); // 입력 필드 초기화
-        requestRoomList(); // 방 목록 새로고침
-    } else {
-        QMessageBox::warning(this, "채팅방 생성 실패", message);
-    }
+    // if (success) {
+    //     //QMessageBox::information(this, "채팅방 생성", message);
+    //     QString createdRoomName = m_roomListUI->ui->createRoomNameLineEdit->text().trimmed();
+    //     m_roomListUI->ui->createRoomNameLineEdit->clear();
+
+    //     //requestRoomList(); // 방 생성 후 목록 갱신 요청
+    //     sendJoinRoomRequest(createdRoomName); // 방 생성 성공 시 바로 입장 요청
+    // } else {
+    //     //QMessageBox::warning(this, "채팅방 생성 실패", message);
+    // }
 }
 
-// 방 입장 버튼 클릭 시
+
+// 특정 방 이름으로 입장 요청을 보냄
+void LobbyMainUI::sendJoinRoomRequest(const QString& roomName)
+{
+    qDebug() << "sendJoinRoomRequest 호출: 방 입장 요청 - " << roomName;
+
+    if (!m_clientChat->isConnected()) {
+        QMessageBox::warning(this, "오류", "서버에 연결되어 있지 않습니다.");
+        return;
+    }
+
+    QJsonObject obj;
+    obj["cmd"] = "join_r";
+    obj["rName"] = roomName;
+    QJsonDocument doc(obj);
+    m_clientChat->sendData(doc);
+    qDebug() << "채팅방 입장 요청 전송: " << doc.toJson(QJsonDocument::Compact);
+}
+
+/*
+// 방 입장 버튼 클릭 시 (오직 입장 기능만 수행)
 void LobbyMainUI::on_enterChatRoomButton_clicked()
 {
     qDebug() << "채팅방 입장 버튼 클릭";
 
-    // 선택된 방 이름 가져오기
     QListWidgetItem* selectedItem = m_roomListWidget->currentItem();
     if (!selectedItem) {
         QMessageBox::warning(this, "채팅방 입장", "입장할 채팅방을 선택해주세요.");
         return;
     }
-    // "방이름 (N명)" 형식에서 방 이름만 추출
     QString fullText = selectedItem->text();
     QString roomName = fullText.left(fullText.indexOf(" ("));
 
-    if (!m_clientChat->isConnected()) {
-        QMessageBox::warning(this, "오류", "서버에 연결되어 있지 않습니다.");
-        return;
-    }
-
-    QJsonObject obj;
-    obj["cmd"] = "join_r"; // "joinRoom" 프로토콜 사용
-    obj["rName"] = roomName;
-    QJsonDocument doc(obj);
-    m_clientChat->sendData(doc);
-    qDebug() << "채팅방 입장 요청 전송: " << doc.toJson(QJsonDocument::Compact);
-
-    // 서버 응답에 따라 실제 채팅방으로 이동
-    // m_currentChatRoomUI->setRoomName(roomName); // lobbyUI에 방 이름 설정 메서드 추가 필요
-    // m_currentChatRoomUI->requestChatHistory(); // 채팅 기록 요청 (필요시)
+    sendJoinRoomRequest(roomName);
 }
+*/
+
 
 // 방 입장 결과 처리 슬롯
-void LobbyMainUI::handleRoomJoinResult(bool success, const QString& message)
+void LobbyMainUI::handleRoomJoinResult(bool success, const QString& message, const QString& roomName)
 {
+    qDebug() << "[Client LobbyMainUI] handleRoomJoinResult 호출됨. 결과: 성공=" << success << ", 메시지=" << message << ", 방 이름: " << roomName;
+
     if (success) {
         QMessageBox::information(this, "채팅방 입장", message);
-        m_rightStackedWidget->setCurrentIndex(1); // 채팅방 상세 화면으로 전환
-        m_enterChatRoomButton->setVisible(false); // 입장 버튼 숨김
-        m_exitChatRoomButton->setVisible(true);   // 나가기 버튼 표시
-        // m_currentChatRoomUI의 채팅 시작 등 추가 초기화 로직 호출 가능
+        ui->rightStackedWidget->setCurrentIndex(1); // ChatRoomUI 화면으로 전환
+        qDebug() << "[Client LobbyMainUI] 오른쪽 스택 위젯 인덱스 1 (ChatRoomUI)으로 전환됨.";
+
+        // 채팅방 목록 관련 UI 요소 숨김/비활성화
+        //ui->refreshRoomListButton->setVisible(false);
+        //ui->createRoomNameLineEdit->setVisible(false);
+        //ui->createRoomButton->setVisible(false);
+        //m_roomListWidget->setVisible(false);
+
+        // ChatRoomUI에 방 이름 설정
+        m_chatRoomUI->setRoomName(roomName);
+        //qDebug() << "[Client LobbyMainUI] ChatRoomUI에 방 이름 설정: " << roomName;
+
+        // ChatRoomUI의 채팅창에 입장 메시지 추가
+        m_chatRoomUI->appendChatMessage(QString("[시스템] '%1' 방에 입장했습니다.").arg(roomName));
+
     } else {
         QMessageBox::warning(this, "채팅방 입장 실패", message);
+        qDebug() << "[Client LobbyMainUI] 방 입장 실패.";
     }
 }
 
-// 방 나가기 버튼 클릭 시
+
+// 방 나가기 버튼 클릭 시 (ChatRoomUI의 "목록으로 돌아가기" 버튼이 이 함수를 호출)
 void LobbyMainUI::on_exitChatRoomButton_clicked()
 {
     qDebug() << "채팅방 나가기 버튼 클릭";
-    // 현재 활성화된 채팅방 이름 (m_currentChatRoomUI가 가지고 있어야 함)
-    // 예시: QString currentRoomName = m_currentChatRoomUI->getCurrentRoomName();
-    // 임시로 그냥 방을 나간다고 가정 (실제로는 현재 입장한 방 이름 사용)
-    QString currentRoomName = "임시방이름"; // 실제 입장한 방 이름으로 교체 필요
+    QString currentRoomName = "없음";
+    if (m_chatRoomUI && m_chatRoomUI->m_currentRoomNameLabel) {
+        currentRoomName = m_chatRoomUI->m_currentRoomNameLabel->text().replace("현재 방: ", "");
+    }
+
+    if (currentRoomName.isEmpty() || currentRoomName == "없음") {
+        QMessageBox::warning(this, "오류", "현재 입장한 채팅방이 없습니다.");
+        return;
+    }
 
     if (!m_clientChat->isConnected()) {
         QMessageBox::warning(this, "오류", "서버에 연결되어 있지 않습니다.");
@@ -283,23 +221,47 @@ void LobbyMainUI::on_exitChatRoomButton_clicked()
     }
 
     QJsonObject obj;
-    obj["cmd"] = "leave_r"; // "leaveRoom" 프로토콜
+    obj["cmd"] = "leave_r";
     obj["rName"] = currentRoomName;
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
     qDebug() << "채팅방 나가기 요청 전송: " << doc.toJson(QJsonDocument::Compact);
 }
 
+
+/*
 // 방 나가기 결과 처리 슬롯
 void LobbyMainUI::handleRoomLeaveResult(bool success, const QString& message)
 {
+    qDebug() << "[Client LobbyMainUI] handleRoomLeaveResult 호출됨. 성공: " << success << ", 메시지: " << message;
     if (success) {
         QMessageBox::information(this, "채팅방 나가기", message);
-        m_rightStackedWidget->setCurrentIndex(0); // 채팅방 목록 위젯으로 전환
-        m_enterChatRoomButton->setVisible(true);  // 입장 버튼 다시 표시
-        m_exitChatRoomButton->setVisible(false);  // 나가기 버튼 숨김
+        ui->rightStackedWidget->setCurrentIndex(0); // 채팅방 목록 위젯으로 전환
+        qDebug() << "[Client LobbyMainUI] 오른쪽 스택 위젯 인덱스 0 (채팅방 목록)으로 전환됨.";
+
+        // 채팅방 목록 관련 UI 요소 다시 표시/활성화
+        ui->refreshRoomListButton->setVisible(true);
+        ui->createRoomNameLineEdit->setVisible(true);
+        ui->createRoomButton->setVisible(true);
+        ui->roomListWidget->setVisible(true);
+
         requestRoomList(); // 방 목록 새로고침
+        ui->currentChatRoomUI->setRoomName("없음"); // ChatRoomUI의 방 이름 초기화
+        ui->currentChatRoomUI->appendChatMessage("[시스템] 채팅방을 나갔습니다."); // ChatRoomUI의 채팅창 초기화 메시지
     } else {
         QMessageBox::warning(this, "채팅방 나가기 실패", message);
+        qDebug() << "[Client LobbyMainUI] 방 나가기 실패.";
     }
 }
+*/
+
+
+void LobbyMainUI::on_leftTabWidget_currentChanged(int index)
+{
+    if(index==0){
+
+    }else{
+
+    }
+}
+

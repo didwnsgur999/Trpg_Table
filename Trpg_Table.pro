@@ -12,6 +12,7 @@ SOURCES += \
     Backend.cpp \
     Info.cpp \
     chathandler.cpp \
+    chatroomui.cpp \
     clientchat.cpp \
     customer.cpp \
     lobbymainui.cpp \
@@ -21,12 +22,16 @@ SOURCES += \
     mainwindow.cpp \
     order.cpp \
     product.cpp \
-    productUI.cpp
+    productUI.cpp \
+    roomdisplayui.cpp \
+    roomlistui.cpp \
+    storeui.cpp
 
 HEADERS += \
     Backend.h \
     Info.h \
     chathandler.h \
+    chatroomui.h \
     clientchat.h \
     customer.h \
     lobbymainui.h \
@@ -35,14 +40,21 @@ HEADERS += \
     mainwindow.h \
     order.h \
     product.h \
-    productUI.h
+    productUI.h \
+    roomdisplayui.h \
+    roomlistui.h \
+    storeui.h
 
 FORMS += \
+    chatroomui.ui \
     lobbymainui.ui \
     lobbyui.ui \
     loginui.ui \
     mainwindow.ui \
-    productUI.ui
+    productUI.ui \
+    roomdisplayui.ui \
+    roomlistui.ui \
+    storeui.ui
 
 TRANSLATIONS += \
     Trpg_Table_ko_KR.ts
