@@ -189,10 +189,15 @@ void LoginUI::on_registerButton_clicked()
     m_clientChat->sendData(doc);
     qDebug() << "[Client LoginUI] 회원가입 요청 전송: " << doc.toJson(QJsonDocument::Compact);
 }
-void LoginUI::handleRegisterResult(bool success, const QString& message){
+void LoginUI::handleRegisterResult(bool success, const QString& message,const QJsonObject& cus){
     if (success) {
         //여기에서 username이랑 password 정리해서 만들어야됨.
+        int id = cus["id"].toInt();
+        QString name = cus["name"].toString();
+        QString pwd = cus["pwd"].toString();
+        Backend::getInstance().userInit(id,name,pwd,QJsonObject());
         QMessageBox::information(this, "회원가입 성공", "환영합니다, " + ui->usernameLineEdit->text() + "님!");
+        qDebug()<<"id : "<<Backend::getInstance().getUser()->getId();
         emit loginSuccess(); // 로그인 성공 시 시그널 방출
         emit requestPageChange(1); // 로그인 성공 시 로비 메인 UI (인덱스 1)로 전환
     } else {

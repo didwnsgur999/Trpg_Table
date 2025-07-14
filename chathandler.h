@@ -20,7 +20,7 @@ signals:
     void chatreceived(const QString& msg);
     // 새로 추가된 시그널: 로그인 결과 (성공 여부, 메시지)
     void loginResult(bool success, const QString& message, const QJsonObject& cus);
-    void registerResult(bool success, const QString& message);
+    void registerResult(bool success, const QString& message,const QJsonObject& cus);
 
     // 0707 추가된 시그널
     void roomListReceived(const QJsonArray& roomList); // 채팅방 목록 수신 시그널

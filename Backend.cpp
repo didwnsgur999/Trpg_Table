@@ -21,4 +21,5 @@ void Backend::userInit(int id,QString name,QString pwd,const QJsonObject& prod){
         int quantity = it.value().toInt();
         user->addProd(productName, quantity);
     }
+    qDebug()<<name<<id<<pwd;
 }

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "loginui.h"
 #include "lobbymainui.h" // LobbyMainUI 포함
+#include "Backend.h"
 #include <QDir>
 #include <QDebug>
 
@@ -36,5 +37,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::changePage(int index)
 {
+    this->setWindowTitle(QString(tr("현재 접속자: %1").arg(Backend::getInstance().getUser()->getName())));
     ui->UI_STACK->setCurrentIndex(index);
 }

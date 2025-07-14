@@ -46,8 +46,9 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
     } else if (cmd=="ret_add_c"){
         bool success = (obj.value("text")=="success");
         QString message = obj.value("message").toString();
+        QJsonObject cus = obj.value("cus").toObject();
         qDebug() << "회원가입 결과 수신: 성공=" << success << ", 메시지=" << message;
-        emit registerResult(success, message); // LoginUI로 결과 전달
+        emit registerResult(success, message,cus); // LoginUI로 결과 전달
     } else if (cmd == "ret_list_r") { // 채팅방 목록 응답 처리
         QJsonArray rooms = obj.value("roomlist").toArray();
         emit roomListReceived(rooms);

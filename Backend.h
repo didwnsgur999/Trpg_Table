@@ -25,7 +25,6 @@ public:
     void userInit(int,QString,QString,const QJsonObject&);
     QSharedPointer<Customer> getUser() { return user; }
 
-
     void addProduct(QSharedPointer<Product> prod);
 
     const QVector<QSharedPointer<Product>>& getProducts() const;
