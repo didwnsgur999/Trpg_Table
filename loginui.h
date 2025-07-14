@@ -32,6 +32,7 @@ private slots:
 
     // 서버로부터 로그인 결과를 받았을 때 처리하는 슬롯
     void handleLoginResult(bool success, const QString& message,const QJsonObject& cus);
+    void handleRegisterResult(bool success, const QString& message);
 
     void on_serverConnectionError(QAbstractSocket::SocketError socketError); // 서버 연결 오류 슬롯
     void on_serverConnectionEstablished(); // 서버 연결 성공

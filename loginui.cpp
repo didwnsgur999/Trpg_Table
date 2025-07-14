@@ -19,7 +19,8 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
     // ChatHandler의 로그인 결과 시그널 연결
     connect(m_clientChat->getChatHandler(), &ChatHandler::loginResult,
             this, &LoginUI::handleLoginResult);
-
+    connect(m_clientChat->getChatHandler(), &ChatHandler::registerResult,
+            this, &LoginUI::handleRegisterResult);
     // ClientChat의 서버 연결 성공/오류 시그널을 LoginUI 슬롯과 연결
     connect(m_clientChat, &ClientChat::connectionEstablished, this, &LoginUI::on_serverConnectionEstablished);
     connect(m_clientChat, &ClientChat::connectionError, this, &LoginUI::on_serverConnectionError);
@@ -168,6 +169,35 @@ void LoginUI::handleLoginResult(bool success, const QString& message,const QJson
 
 void LoginUI::on_registerButton_clicked()
 {
+    qDebug() << "[Client LOGINUI] 회원가입 버튼 클릭.";
+    // 서버 미연결 시 로그인 시도 불가
+    if(!m_clientChat->isConnected()){
+        QMessageBox::warning(this, "로그인 오류", "서버에 연결 하세요");
+        qDebug() << "[Client LoginUI] 오류: 서버 미연결, 로그인 시도 불가.";
+        return;
+    }
 
+    QString username = ui->usernameLineEdit->text();
+    QString password = ui->passwordLineEdit->text();
+
+    QJsonObject obj;
+    obj["cmd"] = "add_c";
+    obj["cName"] = username;
+    obj["cPwd"] = password;
+
+    QJsonDocument doc(obj);
+    m_clientChat->sendData(doc);
+    qDebug() << "[Client LoginUI] 회원가입 요청 전송: " << doc.toJson(QJsonDocument::Compact);
+}
+void LoginUI::handleRegisterResult(bool success, const QString& message){
+    if (success) {
+        //여기에서 username이랑 password 정리해서 만들어야됨.
+        QMessageBox::information(this, "회원가입 성공", "환영합니다, " + ui->usernameLineEdit->text() + "님!");
+        emit loginSuccess(); // 로그인 성공 시 시그널 방출
+        emit requestPageChange(1); // 로그인 성공 시 로비 메인 UI (인덱스 1)로 전환
+    } else {
+        QMessageBox::warning(this, "회원가입 실패", "로그인 실패: " + message);
+        emit showStatusMessage(QString("회원가입 실패: %1").arg(message), true);
+    }
 }
 

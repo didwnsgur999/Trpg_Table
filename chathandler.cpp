@@ -43,8 +43,12 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
         QJsonObject cus = obj.value("cus").toObject();
         qDebug() << "로그인 결과 수신: 성공=" << success << ", 메시지=" << message;
         emit loginResult(success, message,cus); // LoginUI로 결과 전달
-        // 0707 추가기능
-    }else if (cmd == "ret_list_r") { // 채팅방 목록 응답 처리
+    } else if (cmd=="ret_add_c"){
+        bool success = (obj.value("text")=="success");
+        QString message = obj.value("message").toString();
+        qDebug() << "회원가입 결과 수신: 성공=" << success << ", 메시지=" << message;
+        emit registerResult(success, message); // LoginUI로 결과 전달
+    } else if (cmd == "ret_list_r") { // 채팅방 목록 응답 처리
         QJsonArray rooms = obj.value("roomlist").toArray();
         emit roomListReceived(rooms);
     } else if (cmd == "ret_add_r") { // 방 생성 결과 응답 처리
