@@ -1,6 +1,7 @@
 #include "loginui.h"
 #include "ui_loginui.h"
 #include "chathandler.h" // ChatHandler 사용을 위해 포함
+#include "Backend.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox> // 메시지 박스 사용을 위해 포함
@@ -121,7 +122,6 @@ void LoginUI::on_serverConnectionError(QAbstractSocket::SocketError socketError)
 
 void LoginUI::on_loginButton_clicked()
 {
-    qDebug() << "[Client LoginUI] 로그인 버튼 클릭.";
     // 서버 미연결 시 로그인 시도 불가
     if(!m_clientChat->isConnected()){
         QMessageBox::warning(this, "로그인 오류", "서버에 연결 하세요");
@@ -139,14 +139,19 @@ void LoginUI::on_loginButton_clicked()
 
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
-    qDebug() << "[Client LoginUI] 로그인 요청 전송: " << doc.toJson(QJsonDocument::Compact);
 }
 
-void LoginUI::handleLoginResult(bool success, const QString& message)
+void LoginUI::handleLoginResult(bool success, const QString& message,const QJsonObject& cus)
 {
-    qDebug() << "[Client LoginUI] handleLoginResult 호출됨. 성공: " << success << ", 메시지: " << message;
+    //qDebug() << "[Client LoginUI] handleLoginResult 호출됨. 성공: " << success << ", 메시지: " << message;
     if (success) {
         //여기에서 username이랑 password 정리해서 만들어야됨.
+        int id = cus["id"].toInt();
+        QString name = cus["name"].toString();
+        QString pwd = cus["pwd"].toString();
+        QJsonObject prod = cus["myproduct"].toObject();
+        Backend::getInstance().userInit(id,name,pwd,prod);
+        qDebug()<<"id : "<<Backend::getInstance().getUser()->getId();
         QMessageBox::information(this, "로그인 성공", "환영합니다, " + ui->usernameLineEdit->text() + "님!");
         emit loginSuccess(); // 로그인 성공 시 시그널 방출
         emit requestPageChange(1); // 로그인 성공 시 로비 메인 UI (인덱스 1)로 전환
@@ -160,3 +165,9 @@ void LoginUI::handleLoginResult(bool success, const QString& message)
         emit showStatusMessage(QString("로그인 실패: %1").arg(message), true);
     }
 }
+
+void LoginUI::on_registerButton_clicked()
+{
+
+}
+

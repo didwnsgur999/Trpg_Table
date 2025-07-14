@@ -56,7 +56,8 @@ void LobbyMainUI::changeLeftPage(int index)
 // 로비 UI가 활성화될 때 호출될 초기화 함수 구현
 void LobbyMainUI::initializeLobby()
 {
-    emit m_roomListUI->requestRoomList();
+    m_roomListUI->requestRoomList();
+    m_storeUI->resetStore();
 }
 
 /*

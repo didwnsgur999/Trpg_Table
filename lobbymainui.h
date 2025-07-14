@@ -16,7 +16,6 @@ class LobbyMainUI;
 class LobbyMainUI : public QWidget
 {
     Q_OBJECT
-
 public:
     explicit LobbyMainUI(ClientChat* clientChat, QWidget *parent = nullptr);
     ~LobbyMainUI();

@@ -3,8 +3,6 @@
 
 #include <QMainWindow>
 #include "clientchat.h"
-#include "productUI.h"
-// #include "lobbyui.h"     // 기존 lobbyUI는 이제 LobbyMainUI 안에서 사용되므로 여기서는 제거
 #include "loginui.h"
 #include "lobbymainui.h" // 새로 추가된 LobbyMainUI 포함
 
@@ -23,15 +21,11 @@ public:
 public slots:
     void changePage(int index);      // 페이지 전환 슬롯
 
-private slots:
-    void on_ProductButton_clicked(); // 관리자 UI 관련 버튼 슬롯
-
 private:
     Ui::MainWindow *ui;
     ClientChat* m_clientChat; // ClientChat 인스턴스
 
     LoginUI* m_loginUI;
-    ProductUI* m_productUI;
     LobbyMainUI* m_lobbyMainUI; // 로비 메인 UI (새로 추가)
 };
 #endif // MAINWINDOW_H

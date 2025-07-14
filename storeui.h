@@ -20,6 +20,8 @@ public:
     ~storeUI();
 
     void loadProductList(const QJsonArray& array);
+    void loadUserProduct();
+    void resetStore();
 signals:
     void requestPageChange(int index);
 

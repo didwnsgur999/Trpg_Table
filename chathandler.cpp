@@ -40,8 +40,9 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
     } else if (cmd == "ret_login") { // 서버로부터 로그인 결과가 왔을 때
         bool success = (obj.value("text")=="success");
         QString message = obj.value("message").toString();
+        QJsonObject cus = obj.value("cus").toObject();
         qDebug() << "로그인 결과 수신: 성공=" << success << ", 메시지=" << message;
-        emit loginResult(success, message); // LoginUI로 결과 전달
+        emit loginResult(success, message,cus); // LoginUI로 결과 전달
         // 0707 추가기능
     }else if (cmd == "ret_list_r") { // 채팅방 목록 응답 처리
         QJsonArray rooms = obj.value("roomlist").toArray();

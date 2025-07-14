@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include "product.h"
+#include "customer.h"
 #include <QSharedPointer>
 
 class Backend : QObject
@@ -20,6 +21,10 @@ public:
         static Backend instance;
         return instance;
     }
+
+    void userInit(int,QString,QString,const QJsonObject&);
+    QSharedPointer<Customer> getUser() { return user; }
+
 
     void addProduct(QSharedPointer<Product> prod);
 
@@ -60,6 +65,7 @@ private:
     Backend(const Backend& ) {}
     Backend& operator=(const Backend& ) {}
     ~Backend() {}
+    QSharedPointer<Customer> user;
     QVector<QSharedPointer<Product>> productList;
 };
 

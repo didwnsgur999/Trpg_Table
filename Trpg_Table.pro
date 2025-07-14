@@ -16,13 +16,10 @@ SOURCES += \
     clientchat.cpp \
     customer.cpp \
     lobbymainui.cpp \
-    lobbyui.cpp \
     loginui.cpp \
     main.cpp \
     mainwindow.cpp \
-    order.cpp \
     product.cpp \
-    productUI.cpp \
     roomdisplayui.cpp \
     roomlistui.cpp \
     storeui.cpp
@@ -35,12 +32,9 @@ HEADERS += \
     clientchat.h \
     customer.h \
     lobbymainui.h \
-    lobbyui.h \
     loginui.h \
     mainwindow.h \
-    order.h \
     product.h \
-    productUI.h \
     roomdisplayui.h \
     roomlistui.h \
     storeui.h
@@ -48,10 +42,8 @@ HEADERS += \
 FORMS += \
     chatroomui.ui \
     lobbymainui.ui \
-    lobbyui.ui \
     loginui.ui \
     mainwindow.ui \
-    productUI.ui \
     roomdisplayui.ui \
     roomlistui.ui \
     storeui.ui
