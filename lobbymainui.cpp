@@ -47,6 +47,8 @@ void LobbyMainUI::changePage(const QString& roomName)
 {
     ui->rightStackedWidget->setCurrentIndex(1);
     m_chatRoomUI->setRoomName(roomName);
+    //방 들어갔을때만 enable
+    ui->leftTabWidget->setTabEnabled(1,true);
 }
 void LobbyMainUI::changeLeftPage(int index)
 {
@@ -58,63 +60,12 @@ void LobbyMainUI::initializeLobby()
 {
     m_roomListUI->requestRoomList();
     m_storeUI->resetStore();
-}
+    //채팅방 탭도 설정되야됨.
 
-/*
-// 채팅방 목록 및 생성 관련 슬롯 구현
-// 서버에 채팅방 목록 요청
-void LobbyMainUI::requestRoomList()
-{
-    if(!m_clientChat->isConnected()){
-        QMessageBox::warning(this, "오류", "서버 미연결로 채팅방 목록 가져올 수 없습니다!");
-        return;
-    }
-    QJsonObject obj;
-    obj["cmd"] = "list_r"; // 서버 프로토콜에 맞게 "list_r" 사용
-    QJsonDocument doc(obj);
-    m_clientChat->sendData(doc);
-    qDebug() << "채팅방 목록 요청 전송: " << doc.toJson(QJsonDocument::Compact);
+    //채팅방에 들어갔을때만 방 클릭할수 있도록
+    ui->leftTabWidget->setTabEnabled(1,false);
+    ui->leftTabWidget->setTabToolTip(1, "채팅방 입장 시에만 사용할 수 있습니다");
 }
-*/
-/*
-// 서버로부터 받은 채팅방 목록으로 UI 업데이트
-void LobbyMainUI::updateRoomList(const QJsonArray &roomList)
-{
-    qDebug() << "채팅방 목록 수신: " << roomList;
-    m_roomListWidget->clear(); // 기존 목록 지우기
-    for(const QJsonValue& value : roomList){
-        if(value.isObject()){
-            QJsonObject roomObj = value.toObject();
-            QString roomName = roomObj["name"].toString();
-            int memberCount = roomObj["cnt"].toInt();
-            m_roomListWidget->addItem(QString("%1 (%2명)").arg(roomName).arg(memberCount));
-        }
-    }
-}
-*/
-
-/*
-// 채팅방 생성 버튼 클릭 시
-void LobbyMainUI::on_createChatRoomButton_clicked()
-{
-    if (!m_clientChat->isConnected()) {
-        QMessageBox::warning(this, "오류", "서버에 연결되어 있지 않습니다.");
-        return;
-    }
-    QString roomName = ui->createRoomNameLineEdit->text().trimmed();
-    if (roomName.isEmpty()) {
-        QMessageBox::warning(this, "채팅방 생성", "채팅방 이름을 입력해주세요.");
-        return;
-    }
-
-    QJsonObject obj;
-    obj["cmd"] = "add_r";
-    obj["rName"] = roomName;
-    QJsonDocument doc(obj);
-    m_clientChat->sendData(doc);
-    qDebug() << "채팅방 생성 요청 전송: " << doc.toJson(QJsonDocument::Compact);
-}
-*/
 
 /*
 // 방 생성 결과 처리 슬롯
@@ -276,7 +227,7 @@ void LobbyMainUI::handleRoomLeaveResult(bool success, const QString& message)
 void LobbyMainUI::on_leftTabWidget_currentChanged(int index)
 {
     if(index==0){
-
+        m_storeUI->resetStore();
     }else{
 
     }
