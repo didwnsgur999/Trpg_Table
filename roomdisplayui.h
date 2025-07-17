@@ -19,6 +19,12 @@ public:
     explicit RoomDisplayUI(ClientChat* clientChat, QWidget *parent = nullptr);
     ~RoomDisplayUI();
     void loadProductList();
+    void addRoomItemHandle(const QJsonObject& product);
+    void loadRoomItemList();
+    void delRoomItemHandle(const QJsonObject& item);
+    void movRoomItemHandle(int id, int newx,int newy, int z);
+    void movRoomItemServerHandle(const QJsonObject& item);
+    void displayItem(int iid);
 
 signals:
     void requestPageChange(int index);
@@ -26,7 +32,11 @@ signals:
 private slots:
     void on_ItemButton_clicked();
 
-    void on_ItemListWidget_itemDoubleClicked(QListWidgetItem *item);
+    void on_UserItemListWidget_itemDoubleClicked(QListWidgetItem *item);
+
+    //void on_RoomItemListWidget_itemClicked(QListWidgetItem *item);
+
+    void on_RoomItemListWidget_itemDoubleClicked(QListWidgetItem *item);
 
 private:
     Ui::RoomDisplayUI *ui;

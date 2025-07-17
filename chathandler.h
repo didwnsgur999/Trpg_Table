@@ -31,6 +31,11 @@ signals:
     // 0713 추가된 시그널
     void productListReceived(const QJsonArray& products);
 
+    // 0716 roomitem 시그널
+    void addRoomItemResult(const QJsonObject& product);
+    void delRoomItemResult(const QJsonObject& product);
+    void movRoomItemResult(const QJsonObject& product);
+
 private:
     // Json 파싱 후 처리하는 헬퍼 함수
     void processJsonObject(const QJsonObject& obj);

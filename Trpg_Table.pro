@@ -19,6 +19,8 @@ SOURCES += \
     loginui.cpp \
     main.cpp \
     mainwindow.cpp \
+    mygraphicsitem.cpp \
+    mygraphicsview.cpp \
     product.cpp \
     roomdisplayui.cpp \
     roomlistui.cpp \
@@ -34,8 +36,11 @@ HEADERS += \
     lobbymainui.h \
     loginui.h \
     mainwindow.h \
+    mygraphicsitem.h \
+    mygraphicsview.h \
     product.h \
     roomdisplayui.h \
+    roomitem.h \
     roomlistui.h \
     storeui.h
 

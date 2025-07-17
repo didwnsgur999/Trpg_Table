@@ -17,25 +17,17 @@ storeUI::~storeUI()
     delete ui;
 }
 void storeUI::loadProductList(const QJsonArray& array){
-    ui->storeListWidget->clear();
+    //백엔드에 받은 제품값 넣기.
+    Backend::getInstance().setProductFromJsonArr(array);
+
+    const auto bprod=Backend::getInstance().getProducts();
     productlist.clear();
+    ui->storeListWidget->clear();
+    for(const auto& prod:bprod){
+        productlist.insert(prod->getName(),prod);
 
-    for(const auto& prod:array){
-        QJsonObject obj = prod.toObject();
-        int id = obj["pId"].toInt();
-        QString name = obj["pName"].toString();
-        int price = obj["pPrice"].toInt();
-        int cnt = obj["pCnt"].toInt();
-        auto newprod = QSharedPointer<Product>::create(id,name,price,cnt);
-        QString base64Image = obj["pImage"].toString();
-        QByteArray imageBytes = QByteArray::fromBase64(base64Image.toUtf8());
-        QPixmap pixmap;
-        pixmap.loadFromData(imageBytes, "PNG");
-        newprod->setImage(pixmap);
-        productlist.insert(name,newprod);
-
-        QListWidgetItem* item = new QListWidgetItem(QIcon(pixmap.scaled(80, 80, Qt::KeepAspectRatio)), name);
-        item->setToolTip(QString("가격: %1원\n재고: %2개").arg(price).arg(cnt));
+        QListWidgetItem* item = new QListWidgetItem(QIcon(prod->getImage().scaled(80, 80, Qt::KeepAspectRatio)), prod->getName());
+        item->setToolTip(QString("가격: %1원\n재고: %2개").arg(prod->getPrice()).arg(prod->getCnt()));
 
         ui->storeListWidget->addItem(item);
     }

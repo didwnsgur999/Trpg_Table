@@ -14,20 +14,8 @@
    <string>Form</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item>
-    <widget class="QGraphicsView" name="RoomGraphicsView"/>
+    <widget class="MyGraphicsView" name="RoomGraphicsView"/>
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -57,7 +45,17 @@
       </widget>
      </item>
      <item>
-      <widget class="QListWidget" name="ItemListWidget">
+      <widget class="QListWidget" name="UserItemListWidget">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="RoomItemListWidget">
        <property name="maximumSize">
         <size>
          <width>150</width>
@@ -70,6 +68,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MyGraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header>mygraphicsview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

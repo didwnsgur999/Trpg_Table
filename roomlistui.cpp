@@ -3,6 +3,7 @@
 #include "roomlistui.h"
 #include "ui_roomlistui.h"
 #include "clientchat.h"
+#include "Backend.h"
 
 RoomListUI::RoomListUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)
@@ -48,6 +49,11 @@ void RoomListUI::on_createRoomButton_clicked()
     QJsonObject obj;
     obj["cmd"] = "add_r";
     obj["rName"] = roomName;
+    //===================//
+    //for debug only
+    //===================//
+    Backend::getInstance().setRoom(roomName);
+    qDebug()<<Backend::getInstance().getRoom();
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
     emit createRoomRequested(roomName);
@@ -71,6 +77,8 @@ void RoomListUI::handleRoomCreationResult(bool success, const QString &message)
 {
     if(success){
         QString roomName = ui->createRoomLineEdit->text().trimmed();
+        Backend::getInstance().setRoom(roomName);
+        qDebug()<<Backend::getInstance().getRoom();
         ui->createRoomLineEdit->clear();
 
         emit joinRoomRequested(roomName); // 그 이름 갖고 자동으로 입장

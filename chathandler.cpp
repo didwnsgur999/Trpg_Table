@@ -72,5 +72,15 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
     } else if (cmd=="ret_add_o"){
         bool success = (obj.value("text").toString() == "success");
         qDebug()<<"order추가 성공 : "<<success;
+    } else if (cmd=="ret_add_r_item"){
+        //방에 아이템 추가됬음 -> 그림은 Backend에 있다고 생각하자.
+        bool success = (obj.value("text").toString()=="success");
+        if(success) emit addRoomItemResult(obj);
+    } else if (cmd=="ret_del_r_item"){
+        bool success = (obj.value("text").toString()=="success");
+        if(success) emit delRoomItemResult(obj);
+    } else if (cmd=="ret_mov_r_item"){
+        bool success = (obj.value("text").toString()=="success");
+        if(success) emit movRoomItemResult(obj);
     }
 }

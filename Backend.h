@@ -10,6 +10,7 @@
 #include <QJsonDocument>
 #include "product.h"
 #include "customer.h"
+#include "roomitem.h"
 #include <QSharedPointer>
 
 class Backend : QObject
@@ -21,13 +22,32 @@ public:
         static Backend instance;
         return instance;
     }
-
+    //유저 처리
     void userInit(int,QString,QString,const QJsonObject&);
-    QSharedPointer<Customer> getUser() { return user; }
+    QSharedPointer<Customer> getUser() { return m_user; }
 
-    void addProduct(QSharedPointer<Product> prod);
 
+    //방 처리
+    void setRoom(QString roomName){
+        m_roomname = roomName;
+    }
+    QString getRoom() {return m_roomname;}
+    void addRoomItem(QSharedPointer<RoomItem> item) {m_roomItemList.push_back(item);}
+    void delRoomItem(int iid);
+    QSharedPointer<RoomItem> searchRoomItem(int iid);
+    const QVector<QSharedPointer<RoomItem>>& getRoomItems() const;
+
+
+
+
+    //제품 처리
+    void setProductFromJsonArr(const QJsonArray& array);
     const QVector<QSharedPointer<Product>>& getProducts() const;
+    void addProduct(QSharedPointer<Product> prod);
+    QSharedPointer<Product> searchProductId(int id);
+
+
+
 
     template<typename T>
     bool saveJson(const QString& filename, const QVector<QSharedPointer<T>>& data) {
@@ -64,8 +84,10 @@ private:
     Backend(const Backend& ) {}
     Backend& operator=(const Backend& ) {}
     ~Backend() {}
-    QSharedPointer<Customer> user;
-    QVector<QSharedPointer<Product>> productList;
+    QSharedPointer<Customer> m_user;
+    QString m_roomname;
+    QVector<QSharedPointer<Product>> m_productList;
+    QVector<QSharedPointer<RoomItem>> m_roomItemList;
 };
 
 #endif // BACKEND_H
