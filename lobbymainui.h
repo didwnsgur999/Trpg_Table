@@ -44,6 +44,9 @@ private:
     //store ui
     storeUI* m_storeUI;
     RoomDisplayUI* m_roomDisplayUI;
+    //첫 생성시 무시
+    bool m_firstTabChangeIgnored = false;
+    bool m_firstStackChangeIgnored = false;
 };
 
 #endif // LOBBYMAINUI_H

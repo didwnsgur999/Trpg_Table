@@ -25,7 +25,7 @@ signals:
     // 0707 추가된 시그널
     void roomListReceived(const QJsonArray& roomList); // 채팅방 목록 수신 시그널
     void addRoomResult(bool success, const QString& message); // 방생성 결과
-    void joinRoomResult(bool success, const QString& messsage, const QString& roomName); // 방입장 결과
+    void joinRoomResult(bool success, const QString& roomName); // 방입장 결과
     void leaveRoomResult(bool success, const QString& message); // 방나가기 결과
 
     // 0713 추가된 시그널

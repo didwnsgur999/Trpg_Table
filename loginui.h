@@ -5,6 +5,7 @@
 #include <QSharedPointer> // QSharedPointer 사용을 위해 포함
 #include "clientchat.h"   // ClientChat 클래스 사용을 위해 포함
 #include <QTcpSocket>     // 소켓 에러 관련하여 안전하게 명시적 처리
+#include <QLabel>
 
 class ClientChat; // 전방 선언
 
@@ -19,13 +20,11 @@ class LoginUI : public QWidget
 public:
     explicit LoginUI(ClientChat* clientChat, QWidget *parent = nullptr);
     ~LoginUI();
-
 signals:
     // 로그인 성공 시 메인 윈도우에 로비 화면으로 전환을 요청하는 시그널
     void requestPageChange(int index); // 페이지 전환 요청 시그널
     void loginSuccess(); // 로그인 성공 시 로비로 전환하기 위한 시그널
     void showStatusMessage(const QString& message, bool isError = false); // 상태 메시지 표시를 위함
-
 private slots:
     // 로그인 버튼 클릭 시 슬롯
     void on_loginButton_clicked();
@@ -39,10 +38,12 @@ private slots:
 
     void on_registerButton_clicked();
 
+    void on_ServerConnectButton_clicked();
+
 private:
     Ui::LoginUI *ui;
     ClientChat* m_clientChat; // ClientChat 인스턴스 (서버 통신용)
-
+    QLabel *bg;
     void attemptConnectToServer(); // 서버 연결 시도 함수 (생성자에서 호출)
 };
 

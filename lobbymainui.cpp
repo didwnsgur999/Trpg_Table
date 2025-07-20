@@ -226,6 +226,10 @@ void LobbyMainUI::handleRoomLeaveResult(bool success, const QString& message)
 
 void LobbyMainUI::on_leftTabWidget_currentChanged(int index)
 {
+    if(!m_firstTabChangeIgnored){
+        m_firstStackChangeIgnored = true;
+        return;
+    }
     if(index==0){
         m_storeUI->resetStore();
     }else{

@@ -11,27 +11,14 @@ RoomListUI::RoomListUI(ClientChat* clientChat, QWidget *parent)
     , m_clientChat(clientChat)
 {
     ui->setupUi(this);
+    connect(m_clientChat->getChatHandler(),&ChatHandler::roomListReceived,this,&RoomListUI::updateRoomList);
+    connect(m_clientChat->getChatHandler(),&ChatHandler::joinRoomResult,this,&RoomListUI::handleRoomJoinResult);
 }
 
 RoomListUI::~RoomListUI()
 {
     delete ui;
 }
-
-
-void RoomListUI::on_enterRoomButton_clicked()
-{
-    QListWidgetItem* selectedItem = ui->chatListWidget->currentItem();
-    if (!selectedItem) {
-        QMessageBox::warning(this, "채팅방 입장", "입장할 채팅방을 선택해주세요.");
-        return;
-    }
-    QString fullText = selectedItem->text();
-    QString roomName = fullText.left(fullText.indexOf(" ("));
-
-    emit joinRoomRequested(roomName);
-}
-
 
 void RoomListUI::on_createRoomButton_clicked()
 {
@@ -58,8 +45,15 @@ void RoomListUI::on_createRoomButton_clicked()
     m_clientChat->sendData(doc);
     emit createRoomRequested(roomName);
 }
-
+//=======================//
 // 서버에 채팅방 목록 요청
+//=======================//
+//reset room clicked
+void RoomListUI::on_resetRoomListButton_clicked()
+{
+    requestRoomList();
+}
+
 void RoomListUI::requestRoomList()
 {
     if(!m_clientChat->isConnected()){
@@ -72,7 +66,23 @@ void RoomListUI::requestRoomList()
     m_clientChat->sendData(doc);
     qDebug() << "채팅방 목록 요청 전송: " << doc.toJson(QJsonDocument::Compact);
 }
+//룸리스트 초기화
+void RoomListUI::updateRoomList(const QJsonArray &roomList)
+{
+    ui->chatListWidget->clear();
+    for (const auto& val : roomList) {
+        if (val.isObject()) {
+            QJsonObject obj = val.toObject();
+            QString roomName = obj["name"].toString();
+            int memberCount = obj["cnt"].toInt();
+            QListWidgetItem *item = new QListWidgetItem(QString("%1 (%2명)").arg(roomName).arg(memberCount));
+            item->setData(Qt::UserRole,roomName);
+            ui->chatListWidget->addItem(item);
+        }
+    }
+}
 
+//룸 생성
 void RoomListUI::handleRoomCreationResult(bool success, const QString &message)
 {
     if(success){
@@ -87,20 +97,34 @@ void RoomListUI::handleRoomCreationResult(bool success, const QString &message)
     }
 }
 
-void RoomListUI::handleRoomJoinResult(bool success, const QString &message, const QString &roomName)
+//join쪽 코드 입장 버튼 누르면 보낸다.
+void RoomListUI::on_enterRoomButton_clicked()
 {
-    // 일단 아직 목록 누르는 거 미구현
+    // 서버에 입장 신호 보냄.
+    QString roomName = ui->createRoomLineEdit->text();
+    QJsonObject obj;
+    obj["cmd"] = "join_r";
+    obj["rName"] = roomName;
+    QJsonDocument doc(obj);
+    m_clientChat->sendData(doc);
 }
 
-void RoomListUI::updateRoomList(const QJsonArray &roomList)
+void RoomListUI::handleRoomJoinResult(bool success, const QString &roomName)
 {
-    ui->chatListWidget->clear();
-    for (const auto& val : roomList) {
-        if (val.isObject()) {
-            QJsonObject obj = val.toObject();
-            QString roomName = obj["name"].toString();
-            int memberCount = obj["cnt"].toInt();
-            ui->chatListWidget->addItem(QString("%1 (%2명)").arg(roomName).arg(memberCount));
-        }
+    if(success){
+        Backend::getInstance().setRoom(roomName);
+        qDebug()<<Backend::getInstance().getRoom();
+        emit joinRoomRequested(roomName);
+    }else{
+        QMessageBox::warning(this,tr("입장 실패"),tr("당신은 방에 들어가지 못했습니다."));
     }
 }
+
+//item clicked -> text to ui->chat
+void RoomListUI::on_chatListWidget_itemClicked(QListWidgetItem *item)
+{
+    //roomName 가져와서 createRoomLineEdit에 roomName 처리.
+    QString roomName = item->data(Qt::UserRole).toString();
+    ui->createRoomLineEdit->setText(roomName);
+}
+

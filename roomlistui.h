@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QJsonArray>
 #include "clientchat.h"
-
+#include <QListWidgetItem>
 class ClientChat; // 전방 선언
 
 namespace Ui {
@@ -22,12 +22,16 @@ public:
 
 public slots:
     void handleRoomCreationResult(bool success, const QString& message);
-    void handleRoomJoinResult(bool success, const QString& message, const QString& roomName);
+    void handleRoomJoinResult(bool success, const QString& roomName);
     void updateRoomList(const QJsonArray& roomList);
 
 private slots:
     void on_enterRoomButton_clicked();
     void on_createRoomButton_clicked();
+
+    void on_resetRoomListButton_clicked();
+
+    void on_chatListWidget_itemClicked(QListWidgetItem *item);
 
 signals:
     void createRoomRequested(const QString& roomName);

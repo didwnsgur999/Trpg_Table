@@ -7,6 +7,7 @@
 #include <QMessageBox> // 메시지 박스 사용을 위해 포함
 #include <QDebug> // qDebug() 사용을 위해 추가
 #include <QTcpSocket> // SocketError 위해
+#include <QLabel>
 
 LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)
@@ -37,6 +38,13 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
     });
 
     // 초기 UI 상태 설정: 연결 전에는 로그인 관련 UI 비활성화
+    // server 포트관련 일단 숨겨놓기
+    ui->serverIpLineEdit->hide();
+    ui->serverPortLineEdit->hide();
+    ui->serverIpLabel->hide();
+    ui->serverPortLabel->hide();
+    ui->ServerConnectButton->hide();
+
     ui->usernameLineEdit->setEnabled(false);
     ui->passwordLineEdit->setEnabled(false);
     ui->loginButton->setEnabled(false);
@@ -74,7 +82,7 @@ void LoginUI::attemptConnectToServer()
 void LoginUI::on_serverConnectionEstablished()
 {
     qDebug() << "[Client LoginUI] on_serverConnectionEstablished() - 서버 연결 성공";
-    emit showStatusMessage("서버 연결 성공!", false); // <-- showStatusMessage 시그널 사용
+    emit showStatusMessage(" 환영합니다! ", false); // <-- showStatusMessage 시그널 사용
 
     // 연결 성공 시 로그인 관련 UI 활성화
     ui->usernameLineEdit->setEnabled(true);
@@ -83,11 +91,13 @@ void LoginUI::on_serverConnectionEstablished()
     ui->registerButton->setEnabled(true); // registerButton 활성화
     ui->serverIpLineEdit->setEnabled(false); // serverIpLineEdit 비활성화
     ui->serverPortLineEdit->setEnabled(false); // serverPortLineEdit 비활성화
+    ui->ServerConnectButton->setEnabled(false); // serverbutton 비활성화
 }
 
 // 서버 연결 오류 발생 시 호출될 슬롯
 void LoginUI::on_serverConnectionError(QAbstractSocket::SocketError socketError)
 {
+    qDebug()<<"here";
     QString errorMessage;
     switch(socketError){
     case QAbstractSocket::ConnectionRefusedError:
@@ -116,9 +126,18 @@ void LoginUI::on_serverConnectionError(QAbstractSocket::SocketError socketError)
     ui->usernameLineEdit->setEnabled(false);
     ui->passwordLineEdit->setEnabled(false);
     ui->loginButton->setEnabled(false);
-    ui->registerButton->setEnabled(false); // registerButton 비활성화
-    ui->serverIpLineEdit->setEnabled(true); // serverIpLineEdit 활성화
-    ui->serverPortLineEdit->setEnabled(true); // serverPortLineEdit 활성화
+    ui->registerButton->setEnabled(false);
+
+    // server관련 활성화
+    ui->serverIpLineEdit->setEnabled(true);
+    ui->serverPortLineEdit->setEnabled(true);
+    ui->ServerConnectButton->setEnabled(true);
+    ui->serverIpLineEdit->show();
+    ui->serverPortLineEdit->show();
+    ui->serverIpLabel->show();
+    ui->serverPortLabel->show();
+    ui->ServerConnectButton->show();
+    ui->connectionStatusLabel->show();
 }
 
 void LoginUI::on_loginButton_clicked()
@@ -206,3 +225,7 @@ void LoginUI::handleRegisterResult(bool success, const QString& message,const QJ
     }
 }
 
+void LoginUI::on_ServerConnectButton_clicked()
+{
+    attemptConnectToServer();
+}

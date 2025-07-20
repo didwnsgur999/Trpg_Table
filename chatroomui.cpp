@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QDebug>
 #include <QMessageBox>
+#include "Backend.h"
 
 ChatRoomUI::ChatRoomUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)
@@ -52,13 +53,13 @@ void ChatRoomUI::on_sendButton_clicked()
     QJsonObject obj;
     obj["cmd"] = "chat";
     obj["text"] = message;
-    obj["rName"] = ui->currentRoomNameLabel->text().replace("현재 방: ", ""); // 현재 방 이름 가져오기
+    obj["rName"] = Backend::getInstance().getRoom(); // 현재 방 이름 가져오기
 
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
 
     ui->messageLineEdit->clear();
-    appendChatMessage("나: " + message); // 내가 보낸 메시지도 바로 표시
+    //appendChatMessage("나: " + message); // 내가 보낸 메시지도 바로 표시
 }
 
 void ChatRoomUI::on_chatreceived(const QString &msg)

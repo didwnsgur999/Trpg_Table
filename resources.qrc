@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>models/ARCHER.png</file>
+        <file>background/tavern.jpg</file>
+    </qresource>
+</RCC>

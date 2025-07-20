@@ -33,7 +33,7 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
     QString cmd = obj.value("cmd").toString();
     qDebug() << "처리 중인 CMD: " << cmd; // 처리 중인 CMD 출력
 
-    if(cmd == "chat"){
+    if(cmd == "ret_chat"){
         QString chatText = obj.value("text").toString();
         qDebug() << "채팅 메시지 수신: " << chatText;
         emit chatreceived(chatText);
@@ -58,9 +58,8 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
         emit addRoomResult(success, message);
     } else if (cmd == "ret_join_r") { // 방 입장 결과 응답 처리
         bool success = (obj.value("text").toString() == "success");
-        QString message = obj.value("text").toString();
         QString roomName = obj.value("rName").toString();
-        emit joinRoomResult(success, message, roomName);
+        emit joinRoomResult(success, roomName);
         // 성공 시 LobbyMainUI에서 실제 채팅방 UI로 전환 로직 추가 필요
     } else if (cmd == "ret_leave_r") { // 방 나가기 결과 응답 처리
         bool success = (obj.value("text").toString() == "success");
