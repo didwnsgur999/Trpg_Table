@@ -9,49 +9,49 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    Backend.cpp \
-    Info.cpp \
-    chathandler.cpp \
-    chatroomui.cpp \
-    clientchat.cpp \
-    customer.cpp \
-    lobbymainui.cpp \
-    loginui.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    mygraphicsitem.cpp \
-    mygraphicsview.cpp \
-    product.cpp \
-    roomdisplayui.cpp \
-    roomlistui.cpp \
-    storeui.cpp
+    mycore/Backend.cpp \
+    mycore/Info.cpp \
+    mycore/chathandler.cpp \
+    ui/chatroomui.cpp \
+    mycore/clientchat.cpp \
+    mycore/customer.cpp \
+    ui/lobbymainui.cpp \
+    ui/loginui.cpp \
+    mycore/main.cpp \
+    ui/mainwindow.cpp \
+    graphics/mygraphicsitem.cpp \
+    graphics/mygraphicsview.cpp \
+    mycore/product.cpp \
+    ui/roomdisplayui.cpp \
+    ui/roomlistui.cpp \
+    ui/storeui.cpp
 
 HEADERS += \
-    Backend.h \
-    Info.h \
-    chathandler.h \
-    chatroomui.h \
-    clientchat.h \
-    customer.h \
-    lobbymainui.h \
-    loginui.h \
-    mainwindow.h \
-    mygraphicsitem.h \
-    mygraphicsview.h \
-    product.h \
-    roomdisplayui.h \
-    roomitem.h \
-    roomlistui.h \
-    storeui.h
+    mycore/Backend.h \
+    mycore/Info.h \
+    mycore/chathandler.h \
+    ui/chatroomui.h \
+    mycore/clientchat.h \
+    mycore/customer.h \
+    ui/lobbymainui.h \
+    ui/loginui.h \
+    ui/mainwindow.h \
+    graphics/mygraphicsitem.h \
+    graphics/mygraphicsview.h \
+    mycore/product.h \
+    ui/roomdisplayui.h \
+    mycore/roomitem.h \
+    ui/roomlistui.h \
+    ui/storeui.h
 
 FORMS += \
-    chatroomui.ui \
-    lobbymainui.ui \
-    loginui.ui \
-    mainwindow.ui \
-    roomdisplayui.ui \
-    roomlistui.ui \
-    storeui.ui
+    ui/chatroomui.ui \
+    ui/lobbymainui.ui \
+    ui/loginui.ui \
+    ui/mainwindow.ui \
+    ui/roomdisplayui.ui \
+    ui/roomlistui.ui \
+    ui/storeui.ui
 
 TRANSLATIONS += \
     Trpg_Table_ko_KR.ts
@@ -65,3 +65,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resources.qrc
+
+DISTFILES += \
+    background/tavern.jpg \
+    models/ARCHER.png

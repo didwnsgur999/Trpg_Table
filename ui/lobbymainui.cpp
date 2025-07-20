@@ -35,6 +35,8 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
     connect(m_roomListUI, &RoomListUI::joinRoomRequested, this, &LobbyMainUI::changePage);
     connect(m_chatRoomUI, &ChatRoomUI::requestLeaveRoom, [=](){
         ui->rightStackedWidget->setCurrentIndex(0);
+        ui->leftTabWidget->setCurrentIndex(0);
+        ui->leftTabWidget->setTabEnabled(1,false);
     });
 }
 
