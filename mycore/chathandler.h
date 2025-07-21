@@ -35,6 +35,9 @@ signals:
     void addRoomItemResult(const QJsonObject& product);
     void delRoomItemResult(const QJsonObject& product);
     void movRoomItemResult(const QJsonObject& product);
+    // 0721 room
+    void roomUserListReceived(const QJsonArray& RoomUserList);
+    void AllUserListReceived(const QJsonArray& UserList);
 
 private:
     // Json 파싱 후 처리하는 헬퍼 함수

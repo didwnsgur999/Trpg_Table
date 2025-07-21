@@ -33,7 +33,6 @@ RoomDisplayUI::RoomDisplayUI(ClientChat* clientChat,QWidget *parent)
         QJsonDocument doc(obj);
         m_clientChat->sendData(doc);
     });
-
 }
 
 RoomDisplayUI::~RoomDisplayUI()
@@ -76,7 +75,6 @@ void RoomDisplayUI::on_ItemButton_clicked()
     isOpen = !isOpen;
     if(isOpen) {
         loadProductList();
-
     }
 }
 
