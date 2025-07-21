@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QSharedPointer> // QSharedPointer 사용을 위해 포함
-#include "clientchat.h"   // ClientChat 클래스 사용을 위해 포함
+#include "mycore/clientchat.h"   // ClientChat 클래스 사용을 위해 포함
 #include <QTcpSocket>     // 소켓 에러 관련하여 안전하게 명시적 처리
 #include <QLabel>
 

@@ -1,8 +1,8 @@
 #include "storeui.h"
 #include "ui_storeui.h"
-#include "chathandler.h"
+#include "mycore/chathandler.h"
 #include <QMessageBox>
-#include "Backend.h"
+#include "mycore/Backend.h"
 
 storeUI::storeUI(ClientChat* clientChat,QWidget *parent)
     : QWidget(parent)

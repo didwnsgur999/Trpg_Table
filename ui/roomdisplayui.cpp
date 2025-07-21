@@ -2,9 +2,9 @@
 #include "ui_roomdisplayui.h"
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
-#include "mygraphicsitem.h"
-#include "Backend.h"
-#include "roomitem.h"
+#include "graphics/mygraphicsitem.h"
+#include "mycore/Backend.h"
+#include "mycore/roomitem.h"
 
 RoomDisplayUI::RoomDisplayUI(ClientChat* clientChat,QWidget *parent)
     : QWidget(parent)

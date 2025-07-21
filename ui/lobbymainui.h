@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QStackedWidget>
 
-#include "clientchat.h"
+#include "mycore/clientchat.h"
 #include "roomlistui.h"
 #include "chatroomui.h" // 새로 생성된 ChatRoomUI 포함
 #include "storeui.h"

@@ -72,7 +72,7 @@
   <customwidget>
    <class>MyGraphicsView</class>
    <extends>QGraphicsView</extends>
-   <header>mygraphicsview.h</header>
+   <header>graphics/mygraphicsview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

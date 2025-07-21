@@ -2,7 +2,7 @@
 #define ROOMDISPLAYUI_H
 
 #include <QWidget>
-#include "clientchat.h"
+#include "mycore/clientchat.h"
 #include <QGraphicsScene>
 #include <QStringListModel>
 #include <QListWidgetItem>

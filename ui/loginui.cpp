@@ -1,7 +1,7 @@
 #include "loginui.h"
 #include "ui_loginui.h"
-#include "chathandler.h" // ChatHandler 사용을 위해 포함
-#include "Backend.h"
+#include "mycore/chathandler.h" // ChatHandler 사용을 위해 포함
+#include "mycore/Backend.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox> // 메시지 박스 사용을 위해 포함

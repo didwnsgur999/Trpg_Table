@@ -2,9 +2,9 @@
 #define STOREUI_H
 
 #include <QWidget>
-#include "clientchat.h"
+#include "mycore/clientchat.h"
 #include <QHash>
-#include "product.h"
+#include "mycore/product.h"
 #include <QListWidgetItem>
 
 namespace Ui {

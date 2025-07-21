@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "clientchat.h"
+#include "mycore/clientchat.h"
 #include "loginui.h"
 #include "lobbymainui.h" // 새로 추가된 LobbyMainUI 포함
 

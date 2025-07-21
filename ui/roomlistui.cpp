@@ -2,8 +2,8 @@
 
 #include "roomlistui.h"
 #include "ui_roomlistui.h"
-#include "clientchat.h"
-#include "Backend.h"
+#include "mycore/clientchat.h"
+#include "mycore/Backend.h"
 
 RoomListUI::RoomListUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)

@@ -6,7 +6,7 @@
 #include <QHBoxLayout>
 #include <QDebug>
 #include <QMessageBox>
-#include "Backend.h"
+#include "mycore/Backend.h"
 
 ChatRoomUI::ChatRoomUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)

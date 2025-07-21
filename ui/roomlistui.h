@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QJsonArray>
-#include "clientchat.h"
+#include "mycore/clientchat.h"
 #include <QListWidgetItem>
 class ClientChat; // 전방 선언
 

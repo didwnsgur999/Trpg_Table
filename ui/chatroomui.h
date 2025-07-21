@@ -6,7 +6,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
-#include "clientchat.h" // ClientChat을 사용하기 위해 포함
+#include "mycore/clientchat.h" // ClientChat을 사용하기 위해 포함
 
 class ClientChat; // 전방 선언
 

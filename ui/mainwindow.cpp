@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include "loginui.h"
 #include "lobbymainui.h" // LobbyMainUI 포함
-#include "Backend.h"
+#include "mycore/Backend.h"
 #include <QDir>
 #include <QDebug>
 
