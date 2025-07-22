@@ -2,5 +2,12 @@
     <qresource prefix="/image">
         <file>models/ARCHER.png</file>
         <file>background/tavern.jpg</file>
+        <file>background/logo.png</file>
+    </qresource>
+    <qresource prefix="/qml">
+        <file>qml/StartScreen.qml</file>
+    </qresource>
+    <qresource prefix="/sound">
+        <file>sound/bgm.mp3</file>
     </qresource>
 </RCC>

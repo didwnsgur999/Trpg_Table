@@ -6,6 +6,7 @@
 #include "mycore/clientchat.h"   // ClientChat 클래스 사용을 위해 포함
 #include <QTcpSocket>     // 소켓 에러 관련하여 안전하게 명시적 처리
 #include <QLabel>
+#include <QQuickWidget>
 
 class ClientChat; // 전방 선언
 
@@ -45,6 +46,13 @@ private:
     ClientChat* m_clientChat; // ClientChat 인스턴스 (서버 통신용)
     QLabel *bg;
     void attemptConnectToServer(); // 서버 연결 시도 함수 (생성자에서 호출)
+    // 배경화면 전용
+    QQuickWidget* background = nullptr;
+
+    // qml 관련
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 };
 
 #endif // LOGINUI_H
