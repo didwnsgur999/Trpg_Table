@@ -26,8 +26,6 @@ ChatRoomUI::ChatRoomUI(ClientChat* clientChat, QWidget *parent)
     connect(m_clientChat->getChatHandler(), &ChatHandler::leaveRoomResult, this, &ChatRoomUI::handleRoomLeaveResult);
     connect(m_clientChat->getChatHandler(),&ChatHandler::roomUserListReceived, this,&ChatRoomUI::loadRoomUserList);
     connect(m_clientChat->getChatHandler(),&ChatHandler::AllUserListReceived, this,&ChatRoomUI::loadAllUserList);
-
-
 }
 
 ChatRoomUI::~ChatRoomUI()
@@ -78,7 +76,7 @@ void ChatRoomUI::on_chatreceived(const QString &msg)
     appendChatMessage(msg); // 서버로부터 받은 메시지 표시
 }
 // ========================================//
-// 새로 추가된 "목록으로 돌아가기" 버튼 클릭 슬롯
+// "목록으로 돌아가기" 버튼 클릭 슬롯
 // =-======================================//
 void ChatRoomUI::on_backToListButton_clicked()
 {
@@ -197,14 +195,13 @@ void ChatRoomUI::loadRoomUserList(const QJsonArray& RoomUserList){
             QJsonObject obj = val.toObject();
             int id = obj["id"].toInt();
             QString Name = obj["Name"].toString();
-            QListWidgetItem *item = new QListWidgetItem(QString("%1 (id: %2)").arg(Name).arg(id));
+            QListWidgetItem *item = new QListWidgetItem(QString(tr("%1 (아이디: %2)")).arg(Name).arg(id));
             item->setData(Qt::UserRole,id);
             ui->RoomUserListWidget->addItem(item);
         }
     }
 }
-//250721 여기서부터 계속
-//방 밖에있는 사람 초대해야됨.
+//방 밖에있는 사람 초대해야됨. 초대기능
 void ChatRoomUI::on_UserListWidget_itemDoubleClicked(QListWidgetItem *item)
 {
     int id = item->data(Qt::UserRole).toInt();
@@ -217,8 +214,16 @@ void ChatRoomUI::on_UserListWidget_itemDoubleClicked(QListWidgetItem *item)
             return;
         }
     }
-    //250721여기서부터 계속
-    //QJsonObject
+    //초대장 보내기.
+    QJsonObject obj;
+    obj["cmd"] = "invite_r";
+    obj["rName"] = Backend::getInstance().getRoom();
+    obj["cid"] = id;
 
+    QJsonDocument doc(obj);
+    m_clientChat->sendData(doc);
+    QMessageBox::warning(this,tr("초대"),tr("%1 님에게 초대가 전송되었습니다.").arg(item->text()));
+    //일단 방에서 나가고 들어가는 기능이 되야 처리가 가능하겠다.
+    //아직 connect도 안됬고 이 함수만 만들어놨음
 }
 

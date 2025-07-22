@@ -24,11 +24,10 @@ public:
 
 public slots:
     void changePage(const QString& roomName);
-    //change left page
-    void changeLeftPage(int index);
 
 signals:
     void requestPageChange(int index);
+    void requestLeaveRoom();
 
 private slots:
 

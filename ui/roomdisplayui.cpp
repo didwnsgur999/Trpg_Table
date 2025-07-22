@@ -223,7 +223,7 @@ void RoomDisplayUI::delRoomItemHandle(const QJsonObject& item){
 // }
 
 //====================//
-//방 아이템 이동시 처리
+// 방 아이템 이동시 처리 //
 //====================//
 void RoomDisplayUI::movRoomItemHandle(int id, int newx,int newy, int z){
     qDebug() << "Item moved. ID:" << id << "x:" <<newx << "y:" <<newy << "z:" << z;
@@ -245,8 +245,6 @@ void RoomDisplayUI::movRoomItemHandle(int id, int newx,int newy, int z){
 void RoomDisplayUI::movRoomItemServerHandle(const QJsonObject& item){
     //여기서 iid, finx, finy, finz얻어서 처리.
     //변경해야하는것 -> item iid로 찾아서 위치변경 finx, finy, finz로 변경해서 처리
-    //
-
     int iid = item["iid"].toInt();
     int finx = item["finx"].toInt();
     int finy = item["finy"].toInt();
@@ -283,4 +281,14 @@ void RoomDisplayUI::movRoomItemServerHandle(const QJsonObject& item){
         }
     }
 }
-
+//모든 디스플레이 정리하고, 처리
+void RoomDisplayUI::leaveRoom(){
+    //scenc 클리어, 아이템 클리어
+    ui->RoomGraphicsView->scene()->clear();
+    ui->UserItemListWidget->clear();
+    ui->RoomItemListWidget->clear();
+    //<<해서 처리.
+    if(ui->ItemButton->text()==">>"){
+        on_ItemButton_clicked();
+    }
+}
