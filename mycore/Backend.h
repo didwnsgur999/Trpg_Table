@@ -36,16 +36,14 @@ public:
     void delRoomItem(int iid);
     QSharedPointer<RoomItem> searchRoomItem(int iid);
     const QVector<QSharedPointer<RoomItem>>& getRoomItems() const;
-
-
-
+    void clearRoomItem();
+    void setRoomItems(const QJsonArray& RoomItems);
 
     //제품 처리
     void setProductFromJsonArr(const QJsonArray& array);
     const QVector<QSharedPointer<Product>>& getProducts() const;
     void addProduct(QSharedPointer<Product> prod);
     QSharedPointer<Product> searchProductId(int id);
-
 
 
 

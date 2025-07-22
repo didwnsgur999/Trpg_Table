@@ -28,6 +28,7 @@ public slots:
 signals:
     void requestPageChange(int index);
     void requestLeaveRoom();
+    void enterChatRoom();
 
 private slots:
 

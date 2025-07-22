@@ -35,6 +35,8 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
     connect(m_roomListUI, &RoomListUI::joinRoomRequested, this, &LobbyMainUI::changePage);
     // 로비메인유아이에서 roomleave 신호 받음 -> roomdisplayui 다 지움.
     connect(this,&LobbyMainUI::requestLeaveRoom,m_roomDisplayUI,&RoomDisplayUI::leaveRoom);
+    connect(this,&LobbyMainUI::enterChatRoom,m_roomDisplayUI,&RoomDisplayUI::enterRoom);
+    //오른쪽 room exit처리.
     connect(m_chatRoomUI, &ChatRoomUI::requestLeaveRoom, [=](){
         ui->rightStackedWidget->setCurrentIndex(0);
         ui->leftTabWidget->setCurrentIndex(0);
@@ -48,13 +50,16 @@ LobbyMainUI::~LobbyMainUI()
 {
     delete ui;
 }
-
+//오른쪽 페이지 변경 처리.
 void LobbyMainUI::changePage(const QString& roomName)
 {
     ui->rightStackedWidget->setCurrentIndex(1);
     m_chatRoomUI->setRoomName(roomName);
     //방 들어갔을때만 enable
+    emit enterChatRoom();
     ui->leftTabWidget->setTabEnabled(1,true);
+    ui->leftTabWidget->setCurrentIndex(1);
+
 }
 
 // 로비 UI가 활성화될 때 호출될 초기화 함수 구현

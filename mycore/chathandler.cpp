@@ -87,5 +87,8 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
     } else if (cmd=="ret_list_r_users"){
         QJsonArray roomUserList = obj["rusers"].toArray();
         emit roomUserListReceived(roomUserList);
+    } else if (cmd=="ret_list_r_items"){
+        QJsonArray roomItemList = obj["rItems"].toArray();
+        emit roomItemListReceived(roomItemList);
     }
 }

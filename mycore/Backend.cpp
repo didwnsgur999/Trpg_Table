@@ -81,3 +81,17 @@ void Backend::userInit(int id,QString name,QString pwd,const QJsonObject& prod){
     }
     qDebug()<<name<<id<<pwd;
 }
+
+void Backend::setRoomItems(const QJsonArray& RoomItems){
+    m_roomItemList.clear();
+    for(const auto& item:RoomItems){
+        QJsonObject obj = item.toObject();
+        QSharedPointer<RoomItem> rItem= QSharedPointer<RoomItem>::create(RoomItem::fromJson(obj));
+        qDebug()<<rItem->iid<<rItem->name;
+        m_roomItemList.push_back(rItem);
+    }
+}
+
+void Backend::clearRoomItem(){
+    m_roomItemList.clear();
+}
