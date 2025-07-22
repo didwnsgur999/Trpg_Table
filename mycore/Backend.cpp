@@ -87,7 +87,7 @@ void Backend::setRoomItems(const QJsonArray& RoomItems){
     for(const auto& item:RoomItems){
         QJsonObject obj = item.toObject();
         QSharedPointer<RoomItem> rItem= QSharedPointer<RoomItem>::create(RoomItem::fromJson(obj));
-        qDebug()<<rItem->iid<<rItem->name;
+        qDebug()<<"rItem pushBack: "<<rItem->iid<<rItem->name;
         m_roomItemList.push_back(rItem);
     }
 }

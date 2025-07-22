@@ -53,6 +53,7 @@ LobbyMainUI::~LobbyMainUI()
 //오른쪽 페이지 변경 처리.
 void LobbyMainUI::changePage(const QString& roomName)
 {
+    qDebug()<<"change page";
     ui->rightStackedWidget->setCurrentIndex(1);
     m_chatRoomUI->setRoomName(roomName);
     //방 들어갔을때만 enable

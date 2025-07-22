@@ -43,6 +43,7 @@ RoomDisplayUI::~RoomDisplayUI()
 void RoomDisplayUI::enterRoom(){
     //백엔드에 roomitem 가져오라고 말해야됨. 근데 못보냄 backend는 chat 없음... instance할걸
     //일단 임시로 여기서 보내고 받아오자.
+    qDebug()<<"send enter room";
     QJsonObject obj;
     obj["cmd"]="list_r_items";
     obj["rName"] = Backend::getInstance().getRoom();
@@ -52,11 +53,11 @@ void RoomDisplayUI::enterRoom(){
 void RoomDisplayUI::getServerRoomItem(const QJsonArray& RoomItem){
     //여기서 백엔드에 넣는코드
     Backend::getInstance().setRoomItems(RoomItem);
-    qDebug()<<RoomItem;
     loadRoomItemList();
     const auto& vec_item=Backend::getInstance().getRoomItems();
     //디스플레이 하는 코드
     for(const auto& item:vec_item){
+        qDebug()<<item->iid<<item->name;
         displayItem(item->iid);
     }
 }
