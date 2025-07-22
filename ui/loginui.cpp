@@ -8,6 +8,8 @@
 #include <QDebug> // qDebug() 사용을 위해 추가
 #include <QTcpSocket> // SocketError 위해
 #include <QLabel>
+#include <QMediaPlayer> // 배경음악
+#include <QAudioOutput>
 
 LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)
@@ -16,6 +18,24 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
 {
     qDebug() << "[Client LoginUI] 생성자 호출 시작.";
     ui->setupUi(this);
+
+    // qml 연결
+    background = new QQuickWidget(this);
+    background->setSource(QUrl("qrc:qml/qml/StartScreen.qml"));
+    background->setResizeMode(QQuickWidget::SizeRootObjectToView);
+    background->setClearColor(Qt::transparent);
+    background->setGeometry(this->rect());
+    background->lower();  // 배경이니까 맨 아래로
+
+    // 배경음악 (반복재생) -> 로그인 이후에도 계속 하고 싶으면 메인으로 ㄱ
+    // (단, 그러면 소리 끄고 키고 조절하고 까지 필요할 거 같아서 걍 여기에 둠)
+    QAudioOutput* audioOutput = new QAudioOutput(this);
+    audioOutput->setVolume(0.4);
+    QMediaPlayer* player = new QMediaPlayer(this);
+    player->setAudioOutput(audioOutput);
+    player->setSource(QUrl("qrc:/sound/sound/bgm.mp3"));
+    player->setLoops(QMediaPlayer::Infinite);
+    player->play();
 
     // ChatHandler의 로그인 결과 시그널 연결
     connect(m_clientChat->getChatHandler(), &ChatHandler::loginResult,
@@ -228,4 +248,13 @@ void LoginUI::handleRegisterResult(bool success, const QString& message,const QJ
 void LoginUI::on_ServerConnectButton_clicked()
 {
     attemptConnectToServer();
+}
+
+// qml 연결
+void LoginUI::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+    if (background) {
+        background->setGeometry(this->rect());
+    }
 }
