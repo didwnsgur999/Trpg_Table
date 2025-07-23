@@ -90,5 +90,13 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
     } else if (cmd=="ret_list_r_items"){
         QJsonArray roomItemList = obj["rItems"].toArray();
         emit roomItemListReceived(roomItemList);
+    } else if (cmd=="ret_invite_r"){
+        bool success = (obj.value("text").toString()=="success");
+        if(success){
+            QString rName = obj["rName"].toString();
+            emit inviteReceived(rName);
+        } else {
+            emit inviteFailed();
+        }
     }
 }

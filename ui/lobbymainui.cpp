@@ -44,6 +44,10 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
         //roomdisplay 지우기.
         emit requestLeaveRoom();
     });
+    //여기부터
+    connect(m_clientChat->getChatHandler(),&ChatHandler::inviteReceived,[=](){
+        QMessageBox::
+    })
 }
 
 LobbyMainUI::~LobbyMainUI()
