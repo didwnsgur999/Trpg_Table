@@ -71,6 +71,7 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
     ui->registerButton->setEnabled(false); // registerButton 활성화/비활성화 추가
 
     // 기본값 설정 - 서버 IP 및 포트
+    //ui->serverIpLineEdit->setText("192.168.2.18");
     ui->serverIpLineEdit->setText("127.0.0.1");
     ui->serverPortLineEdit->setText("30800");
 
