@@ -25,6 +25,9 @@ public:
     void movRoomItemHandle(int id, int newx,int newy, int z);
     void movRoomItemServerHandle(const QJsonObject& item);
     void displayItem(int iid);
+    void leaveRoom();
+    void enterRoom();
+    void getServerRoomItem(const QJsonArray& RoomItem);
 
 signals:
     void requestPageChange(int index);

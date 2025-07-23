@@ -20,11 +20,11 @@ RoomDisplayUI::RoomDisplayUI(ClientChat* clientChat,QWidget *parent)
     connect(m_clientChat->getChatHandler(),&ChatHandler::addRoomItemResult,this,&RoomDisplayUI::addRoomItemHandle);
     connect(m_clientChat->getChatHandler(),&ChatHandler::delRoomItemResult,this,&RoomDisplayUI::delRoomItemHandle);
     connect(m_clientChat->getChatHandler(),&ChatHandler::movRoomItemResult,this,&RoomDisplayUI::movRoomItemServerHandle);
-
+    connect(m_clientChat->getChatHandler(),&ChatHandler::roomItemListReceived,this,&RoomDisplayUI::getServerRoomItem);
     //from GraphicsView item deleted
     connect(ui->RoomGraphicsView,&MyGraphicsView::itemDeleted,this,[=](auto id){
         QJsonObject obj;
-        obj["cmd"] = "del_r_item";
+        obj["cmd"] = "del_r_items";
         obj["iid"] = id;
         obj["rName"] = Backend::getInstance().getRoom();
 
@@ -33,15 +33,36 @@ RoomDisplayUI::RoomDisplayUI(ClientChat* clientChat,QWidget *parent)
         QJsonDocument doc(obj);
         m_clientChat->sendData(doc);
     });
-
 }
 
 RoomDisplayUI::~RoomDisplayUI()
 {
     delete ui;
 }
+// 방 입장시 서버 RoomItem data가져오고, 각 x,y좌표에 맞게 display해야됨.
+void RoomDisplayUI::enterRoom(){
+    //백엔드에 roomitem 가져오라고 말해야됨. 근데 못보냄 backend는 chat 없음... instance할걸
+    //일단 임시로 여기서 보내고 받아오자.
+    qDebug()<<"send enter room";
+    QJsonObject obj;
+    obj["cmd"]="list_r_items";
+    obj["rName"] = Backend::getInstance().getRoom();
+    QJsonDocument doc(obj);
+    m_clientChat->sendData(doc);
+}
+void RoomDisplayUI::getServerRoomItem(const QJsonArray& RoomItem){
+    //여기서 백엔드에 넣는코드
+    Backend::getInstance().setRoomItems(RoomItem);
+    loadRoomItemList();
+    const auto& vec_item=Backend::getInstance().getRoomItems();
+    //디스플레이 하는 코드
+    for(const auto& item:vec_item){
+        qDebug()<<item->iid<<item->name;
+        displayItem(item->iid);
+    }
+}
 
-// sliding window
+// 슬라이딩 윈도우 아이템 버튼
 void RoomDisplayUI::on_ItemButton_clicked()
 {
     static bool isOpen = false;
@@ -76,7 +97,6 @@ void RoomDisplayUI::on_ItemButton_clicked()
     isOpen = !isOpen;
     if(isOpen) {
         loadProductList();
-
     }
 }
 
@@ -225,7 +245,7 @@ void RoomDisplayUI::delRoomItemHandle(const QJsonObject& item){
 // }
 
 //====================//
-//방 아이템 이동시 처리
+// 방 아이템 이동시 처리 //
 //====================//
 void RoomDisplayUI::movRoomItemHandle(int id, int newx,int newy, int z){
     qDebug() << "Item moved. ID:" << id << "x:" <<newx << "y:" <<newy << "z:" << z;
@@ -247,8 +267,6 @@ void RoomDisplayUI::movRoomItemHandle(int id, int newx,int newy, int z){
 void RoomDisplayUI::movRoomItemServerHandle(const QJsonObject& item){
     //여기서 iid, finx, finy, finz얻어서 처리.
     //변경해야하는것 -> item iid로 찾아서 위치변경 finx, finy, finz로 변경해서 처리
-    //
-
     int iid = item["iid"].toInt();
     int finx = item["finx"].toInt();
     int finy = item["finy"].toInt();
@@ -285,4 +303,15 @@ void RoomDisplayUI::movRoomItemServerHandle(const QJsonObject& item){
         }
     }
 }
-
+//모든 디스플레이 정리하고, 처리
+void RoomDisplayUI::leaveRoom(){
+    //scenc 클리어, 아이템 클리어
+    ui->RoomGraphicsView->scene()->clear();
+    ui->UserItemListWidget->clear();
+    ui->RoomItemListWidget->clear();
+    Backend::getInstance().clearRoomItem();
+    //<<해서 처리.
+    if(ui->ItemButton->text()==">>"){
+        on_ItemButton_clicked();
+    }
+}
