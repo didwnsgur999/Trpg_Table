@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QMessageBox>
 
 #include "roomlistui.h"
 #include "chatroomui.h"
@@ -44,10 +45,25 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
         //roomdisplay 지우기.
         emit requestLeaveRoom();
     });
-    //여기부터
-    connect(m_clientChat->getChatHandler(),&ChatHandler::inviteReceived,[=](){
-        QMessageBox::
-    })
+    //방 초대 왔을때 처리.
+    connect(m_clientChat->getChatHandler(),&ChatHandler::inviteReceived,[=](QString rName){
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(nullptr,
+                                      tr("%1 초대").arg(rName),
+                                      tr("방 %1 조대를 수락하시겠습니까?").arg(rName),
+                                      QMessageBox::Yes | QMessageBox::No);
+        QJsonObject obj;
+        if (reply == QMessageBox::Yes) {
+            emit acceptInvite(rName);
+        } else {
+            //reject
+            QMessageBox::information(this,tr("초대 거부"),tr("초대를 거부하였습니다"));
+        }
+    });
+    //방 나가야하는지 체크
+    connect(this,&LobbyMainUI::acceptInvite,m_chatRoomUI,&ChatRoomUI::InviteHandle);
+    //입장하기
+    connect(this,&LobbyMainUI::acceptInvite,m_roomListUI,&RoomListUI::InviteHandle);
 }
 
 LobbyMainUI::~LobbyMainUI()

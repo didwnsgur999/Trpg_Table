@@ -96,6 +96,7 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
             QString rName = obj["rName"].toString();
             emit inviteReceived(rName);
         } else {
+            //내가 초대하고 초대 무효됬을때.
             emit inviteFailed();
         }
     }

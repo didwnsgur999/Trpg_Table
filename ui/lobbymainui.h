@@ -29,6 +29,7 @@ signals:
     void requestPageChange(int index);
     void requestLeaveRoom();
     void enterChatRoom();
+    void acceptInvite(const QString& rName);
 
 private slots:
 

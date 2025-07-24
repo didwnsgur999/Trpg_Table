@@ -24,6 +24,8 @@ public slots:
     void handleRoomCreationResult(bool success, const QString& message);
     void handleRoomJoinResult(bool success, const QString& roomName);
     void updateRoomList(const QJsonArray& roomList);
+    void InviteHandle(const QString& rName);
+    void InviteFailHandle();
 
 private slots:
     void on_enterRoomButton_clicked();
