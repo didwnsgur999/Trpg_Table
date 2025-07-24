@@ -26,6 +26,7 @@ ChatRoomUI::ChatRoomUI(ClientChat* clientChat, QWidget *parent)
     connect(m_clientChat->getChatHandler(), &ChatHandler::leaveRoomResult, this, &ChatRoomUI::handleRoomLeaveResult);
     connect(m_clientChat->getChatHandler(),&ChatHandler::roomUserListReceived, this,&ChatRoomUI::loadRoomUserList);
     connect(m_clientChat->getChatHandler(),&ChatHandler::AllUserListReceived, this,&ChatRoomUI::loadAllUserList);
+    connect(m_clientChat->getChatHandler(),&ChatHandler::banreceived,this,&ChatRoomUI::banFailHandle);
 }
 
 ChatRoomUI::~ChatRoomUI()
@@ -232,3 +233,25 @@ void ChatRoomUI::InviteHandle(const QString& rName){
     on_backToListButton_clicked();
 }
 
+//더블클릭 강퇴기능
+void ChatRoomUI::on_RoomUserListWidget_itemDoubleClicked(QListWidgetItem *item)
+{
+    int id = item->data(Qt::UserRole).toInt();
+    if(id==Backend::getInstance().getUser()->getId()){
+        QMessageBox::warning(this,tr("강퇴 거부"),tr("본인은 강퇴불가합니다."));
+        return;
+    }
+    QJsonObject obj;
+    obj["cmd"] = "ban_r_user";
+    obj["rName"] = Backend::getInstance().getRoom();
+    obj["mid"] = Backend::getInstance().getUser()->getId();
+    obj["cid"] = id;
+
+    QJsonDocument doc(obj);
+    m_clientChat->sendData(doc);
+}
+
+//실패시 실패이유 제공
+void ChatRoomUI::banFailHandle(const QString& message){
+    QMessageBox::warning(this,tr("%1").arg(message),tr("%1 : 이유로 강퇴처리 불가능합니다.").arg(message));
+}

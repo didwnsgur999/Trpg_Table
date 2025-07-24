@@ -30,7 +30,7 @@ public:
     void loadAllUserList(const QJsonArray& UserList);
     void loadRoomUserList(const QJsonArray& RoomUserList);
     void InviteHandle(const QString& rName);
-
+    void banFailHandle(const QString& message);
     QLabel* m_currentRoomNameLabel; // public으로 유지
 
 
@@ -46,6 +46,8 @@ private slots:
     void on_UserListButton_clicked();
 
     void on_UserListWidget_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_RoomUserListWidget_itemDoubleClicked(QListWidgetItem *item);
 
 private:
     Ui::ChatRoomUI *ui;

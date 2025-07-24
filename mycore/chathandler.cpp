@@ -99,5 +99,10 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
             //내가 초대하고 초대 무효됬을때.
             emit inviteFailed();
         }
+    } else if (cmd=="ret_ban_r"){
+        QString message = obj.value("text").toString();
+        emit banreceived(message);
+    } else if (cmd=="ret_banned_r"){
+        emit bannedreceived();
     }
 }
