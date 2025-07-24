@@ -29,8 +29,10 @@ public:
     void requestRoomUserList();
     void loadAllUserList(const QJsonArray& UserList);
     void loadRoomUserList(const QJsonArray& RoomUserList);
+    void InviteHandle(const QString& rName);
 
     QLabel* m_currentRoomNameLabel; // public으로 유지
+
 
 signals:
     void requestLeaveRoom(); // 방 나가기 요청 시그널 (LobbyMainUI로 전달)

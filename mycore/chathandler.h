@@ -39,6 +39,9 @@ signals:
     void roomUserListReceived(const QJsonArray& RoomUserList);
     void AllUserListReceived(const QJsonArray& UserList);
     void roomItemListReceived(const QJsonArray& RoomItemList);
+    // 0723 room invite 시그널
+    void inviteReceived(const QString& rName);
+    void inviteFailed();
 
 private:
     // Json 파싱 후 처리하는 헬퍼 함수

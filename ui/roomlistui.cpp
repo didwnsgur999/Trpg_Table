@@ -13,6 +13,7 @@ RoomListUI::RoomListUI(ClientChat* clientChat, QWidget *parent)
     ui->setupUi(this);
     connect(m_clientChat->getChatHandler(),&ChatHandler::roomListReceived,this,&RoomListUI::updateRoomList);
     connect(m_clientChat->getChatHandler(),&ChatHandler::joinRoomResult,this,&RoomListUI::handleRoomJoinResult);
+    connect(m_clientChat->getChatHandler(),&ChatHandler::inviteFailed,this,&RoomListUI::InviteFailHandle);
 }
 
 RoomListUI::~RoomListUI()
@@ -126,5 +127,13 @@ void RoomListUI::on_chatListWidget_itemClicked(QListWidgetItem *item)
     //roomName 가져와서 createRoomLineEdit에 roomName 처리.
     QString roomName = item->data(Qt::UserRole).toString();
     ui->createRoomLineEdit->setText(roomName);
+}
+//초대 수락
+void RoomListUI::InviteHandle(const QString& rName){
+    ui->createRoomLineEdit->setText(rName);
+    on_enterRoomButton_clicked();
+}
+void RoomListUI::InviteFailHandle(){
+    QMessageBox::warning(this,tr("초대 실패"),tr("상대방이 접속을 종료하였습니다."));
 }
 

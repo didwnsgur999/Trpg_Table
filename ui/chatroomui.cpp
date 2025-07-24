@@ -99,7 +99,7 @@ void ChatRoomUI::handleRoomLeaveResult(bool success, const QString &message)
     if(success){
         // 초기화
         setRoomName("없음");
-        Backend::getInstance().setRoom(NULL);
+        Backend::getInstance().setRoom(QString());
         ui->messageLineEdit->clear();
         ui->chatTextEdit->clear();
 
@@ -225,5 +225,10 @@ void ChatRoomUI::on_UserListWidget_itemDoubleClicked(QListWidgetItem *item)
     QMessageBox::warning(this,tr("초대"),tr("%1 님에게 초대가 전송되었습니다.").arg(item->text()));
     //일단 방에서 나가고 들어가는 기능이 되야 처리가 가능하겠다.
     //아직 connect도 안됬고 이 함수만 만들어놨음
+}
+//초대 받았을때 방에 있으면 나가야됨
+void ChatRoomUI::InviteHandle(const QString& rName){
+    Q_UNUSED(rName);
+    on_backToListButton_clicked();
 }
 
