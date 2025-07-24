@@ -42,6 +42,8 @@ signals:
     // 0723 room invite 시그널
     void inviteReceived(const QString& rName);
     void inviteFailed();
+    void banreceived(const QString& message);
+    void bannedreceived();
 
 private:
     // Json 파싱 후 처리하는 헬퍼 함수
