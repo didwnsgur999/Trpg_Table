@@ -9,6 +9,7 @@
 #include "mycore/Backend.h"
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
+#include <QRandomGenerator>
 
 ChatRoomUI::ChatRoomUI(ClientChat* clientChat, QWidget *parent)
     : QWidget(parent)
@@ -58,6 +59,52 @@ void ChatRoomUI::on_sendButton_clicked()
     QString message = ui->messageLineEdit->text();
     if (message.isEmpty()) {
         return;
+    }
+
+    if (message.startsWith("/Dice", Qt::CaseInsensitive)) {
+        QRegularExpression diceRegex("^/Dice\\s+(\\d+)[dD](\\d+)([+-]\\d+)?");
+        QRegularExpressionMatch match = diceRegex.match(message);
+
+        if (match.hasMatch()) {
+            int count = match.captured(1).toInt(); // 주사위 개수
+            int sides = match.captured(2).toInt(); // 주사위 면 수
+            int modifier = 0;
+            if (match.captured(3).length() > 0)
+                modifier = match.captured(3).toInt(); // +2, -1 같은 보정값
+
+            QVector<int> rolls;
+            int sum = 0;
+            for (int i = 0; i < count; ++i) {
+                int roll = QRandomGenerator::global()->bounded(1, sides + 1);
+                rolls.append(roll);
+                sum += roll;
+            }
+            sum += modifier;
+
+            // 결과 문자열 만들기
+            QString resultText = QString("🎲 %1d%2%3 → ")
+                                     .arg(count)
+                                     .arg(sides)
+                                     .arg(modifier != 0 ? (modifier > 0 ? "+" + QString::number(modifier) : QString::number(modifier)) : "");
+            for (int r : rolls)
+                resultText += QString("[%1] ").arg(r);
+            if (modifier != 0)
+                resultText += QString("%1 = %2").arg(modifier > 0 ? "+" + QString::number(modifier) : QString::number(modifier)).arg(sum);
+            else
+                resultText += QString("= %1").arg(sum);
+
+            // 결과 채팅으로 서버에 전송
+            QJsonObject obj;
+            obj["cmd"] = "chat";
+            obj["text"] = resultText;
+            obj["rName"] = Backend::getInstance().getRoom();
+
+            QJsonDocument doc(obj);
+            m_clientChat->sendData(doc);
+
+            ui->messageLineEdit->clear();
+            return; // 일반 채팅 처리 건너뜀
+        }
     }
 
     QJsonObject obj;
