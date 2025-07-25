@@ -58,7 +58,7 @@
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">color: black;
+            <string notr="true">color: red;
 font: 600 12pt &quot;나눔고딕&quot;;</string>
            </property>
            <property name="text">
@@ -105,7 +105,7 @@ font: 600 12pt &quot;나눔고딕&quot;;</string>
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">color: black;
+            <string notr="true">color: red;
 font: 600 12pt &quot;나눔고딕&quot;;</string>
            </property>
            <property name="text">
