@@ -18,7 +18,6 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
 {
     qDebug() << "[Client LoginUI] 생성자 호출 시작.";
     ui->setupUi(this);
-
     // qml 연결
     background = new QQuickWidget(this);
     background->setSource(QUrl("qrc:qml/qml/StartScreen.qml"));
@@ -51,9 +50,9 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
         ui->connectionStatusLabel->setText(message); // <-- connectionStatusLabel 사용
         // 오류 메시지일 경우 텍스트 색상 변경 등 추가 UI 처리 가능
         if (isError) {
-            ui->connectionStatusLabel->setStyleSheet("color: red;");
+            ui->connectionStatusLabel->setStyleSheet("color: red;font-size: 16pt; font-weight: bold;");
         } else {
-            ui->connectionStatusLabel->setStyleSheet("color: black;");
+            ui->connectionStatusLabel->setStyleSheet("color: Goldenrod; font-size: 16pt; font-weight: bold;");
         }
     });
 
@@ -71,8 +70,8 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
     ui->registerButton->setEnabled(false); // registerButton 활성화/비활성화 추가
 
     // 기본값 설정 - 서버 IP 및 포트
-    //ui->serverIpLineEdit->setText("192.168.2.18");
-    ui->serverIpLineEdit->setText("127.0.0.1");
+    ui->serverIpLineEdit->setText("192.168.2.18");
+    //ui->serverIpLineEdit->setText("127.0.0.2");
     ui->serverPortLineEdit->setText("30800");
 
     // 초기 상태 메시지

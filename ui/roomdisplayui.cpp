@@ -24,7 +24,7 @@ RoomDisplayUI::RoomDisplayUI(ClientChat* clientChat,QWidget *parent)
     //from GraphicsView item deleted
     connect(ui->RoomGraphicsView,&MyGraphicsView::itemDeleted,this,[=](auto id){
         QJsonObject obj;
-        obj["cmd"] = "del_r_items";
+        obj["cmd"] = "del_r_item";
         obj["iid"] = id;
         obj["rName"] = Backend::getInstance().getRoom();
 
@@ -248,9 +248,7 @@ void RoomDisplayUI::delRoomItemHandle(const QJsonObject& item){
 // 방 아이템 이동시 처리 //
 //====================//
 void RoomDisplayUI::movRoomItemHandle(int id, int newx,int newy, int z){
-    qDebug() << "Item moved. ID:" << id << "x:" <<newx << "y:" <<newy << "z:" << z;
-
-    //서버 전송.
+    //서버로 현재 아이템 id, 위치, 방이름 전송.
     QJsonObject obj;
     obj["cmd"] = "mov_r_item";
     obj["iid"] = id;
@@ -261,9 +259,8 @@ void RoomDisplayUI::movRoomItemHandle(int id, int newx,int newy, int z){
 
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
-    //이후 server에서 받은 ret_mov_r_item로 변경해야됨.
 }
-
+//서버의 기준값을 받음
 void RoomDisplayUI::movRoomItemServerHandle(const QJsonObject& item){
     //여기서 iid, finx, finy, finz얻어서 처리.
     //변경해야하는것 -> item iid로 찾아서 위치변경 finx, finy, finz로 변경해서 처리
@@ -271,7 +268,6 @@ void RoomDisplayUI::movRoomItemServerHandle(const QJsonObject& item){
     int finx = item["finx"].toInt();
     int finy = item["finy"].toInt();
     int finz = item["finz"].toInt();
-    qDebug()<<iid<<finx<<finy<<finz;
     auto myitem = Backend::getInstance().searchRoomItem(iid);
     if(myitem){
         //백엔드 교체
@@ -289,11 +285,13 @@ void RoomDisplayUI::movRoomItemServerHandle(const QJsonObject& item){
                 break;
             }
         }
-        //방 리스트 최신화 - 하나만 + 헤더 있으니까 +1해야됨.
+        //방 리스트 최신화 - 변경된 아이템 기준 + 헤더 제외 index+1
         for(int i=1; i<ui->RoomItemListWidget->count()+1; i++){
             QListWidgetItem* listItem = ui->RoomItemListWidget->item(i);
             if(listItem->data(Qt::UserRole).toInt()==iid){
-                QString newText = QString("%1 (%2,%3,%4)").arg(listItem->data(Qt::UserRole+1).toString()).arg(finx).arg(finy).arg(finz);
+                QString newText = QString("%1 (%2,%3,%4)")
+                                      .arg(listItem->data(Qt::UserRole+1).toString())
+                                      .arg(finx).arg(finy).arg(finz);
                 listItem->setText(newText);
                 listItem->setData(Qt::UserRole+2,finx);
                 listItem->setData(Qt::UserRole+3,finy);
@@ -303,6 +301,7 @@ void RoomDisplayUI::movRoomItemServerHandle(const QJsonObject& item){
         }
     }
 }
+
 //모든 디스플레이 정리하고, 처리
 void RoomDisplayUI::leaveRoom(){
     //scenc 클리어, 아이템 클리어

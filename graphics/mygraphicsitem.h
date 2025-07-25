@@ -11,7 +11,6 @@ public:
     MyGraphicsItem(const QPixmap& pixmap, int iid,int pid, int z);
     int getIid(){return m_iid;}
     void stopTimer();
-    void syncOldPos();
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;

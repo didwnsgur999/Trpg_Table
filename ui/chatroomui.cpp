@@ -83,9 +83,8 @@ void ChatRoomUI::on_backToListButton_clicked()
 {
     QString currentRoomName = Backend::getInstance().getRoom();
 
-    if(currentRoomName.isEmpty()){
-        QMessageBox::warning(this, "오류", "현재 입장한 채팅방이 없습니다.");
-        return;
+    if(!currentRoomName.isEmpty()){
+        QMessageBox::warning(this, tr("방 나가기"), tr("현재 채팅방에서 나갑니다."));
     }
 
     QJsonObject obj;
