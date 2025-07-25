@@ -16,6 +16,7 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
 {
     // 0711 .cpp 파일과 .ui파일 분리
     ui->setupUi(this); // new 적고 setupUi까지 해줘야 메모리에 올라감
+    ui->mainSplitter->setSizes({800,480});
 
     m_roomListUI = new RoomListUI(m_clientChat, this);
     m_chatRoomUI = new ChatRoomUI(m_clientChat, this);
@@ -77,14 +78,12 @@ LobbyMainUI::~LobbyMainUI()
 //오른쪽 페이지 변경 처리.
 void LobbyMainUI::changePage(const QString& roomName)
 {
-    qDebug()<<"change page";
     ui->rightStackedWidget->setCurrentIndex(1);
     m_chatRoomUI->setRoomName(roomName);
-    //방 들어갔을때만 enable
+    //방 들어갔을때만 왼쪽 채팅방 그림탭 enable
     emit enterChatRoom();
     ui->leftTabWidget->setTabEnabled(1,true);
     ui->leftTabWidget->setCurrentIndex(1);
-
 }
 
 // 로비 UI가 활성화될 때 호출될 초기화 함수 구현
@@ -92,8 +91,6 @@ void LobbyMainUI::initializeLobby()
 {
     m_roomListUI->requestRoomList();
     m_storeUI->resetStore();
-    //채팅방 탭도 설정되야됨.
-
     //채팅방에 들어갔을때만 방 클릭할수 있도록
     ui->leftTabWidget->setTabEnabled(1,false);
     ui->leftTabWidget->setTabToolTip(1, "채팅방 입장 시에만 사용할 수 있습니다");
@@ -108,7 +105,7 @@ void LobbyMainUI::on_leftTabWidget_currentChanged(int index)
     if(index==0){
         m_storeUI->resetStore();
     }else{
-
+        //디버그중
     }
 }
 

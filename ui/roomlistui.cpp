@@ -12,7 +12,9 @@ RoomListUI::RoomListUI(ClientChat* clientChat, QWidget *parent)
 {
     ui->setupUi(this);
     connect(m_clientChat->getChatHandler(),&ChatHandler::roomListReceived,this,&RoomListUI::updateRoomList);
-    connect(m_clientChat->getChatHandler(),&ChatHandler::joinRoomResult,this,&RoomListUI::handleRoomJoinResult);
+    //RoomListUI에서 joinRoomResult 처리
+    connect(m_clientChat->getChatHandler(),&ChatHandler::joinRoomResult,
+            this,&RoomListUI::handleRoomJoinResult);
     connect(m_clientChat->getChatHandler(),&ChatHandler::inviteFailed,this,&RoomListUI::InviteFailHandle);
 }
 
@@ -98,12 +100,13 @@ void RoomListUI::handleRoomCreationResult(bool success, const QString &message)
     }
 }
 
-//join쪽 코드 입장 버튼 누르면 보낸다.
+//join 코드 입장 버튼 누르면 보낸다.
 void RoomListUI::on_enterRoomButton_clicked()
 {
     // 서버에 입장 신호 보냄.
     QString roomName = ui->createRoomLineEdit->text();
     QJsonObject obj;
+    // 미리 예약된 cmd
     obj["cmd"] = "join_r";
     obj["rName"] = roomName;
     QJsonDocument doc(obj);

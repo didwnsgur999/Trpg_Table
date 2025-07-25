@@ -62,17 +62,16 @@ void ClientChat::onReadyRead(){
 
 // 서버로 JSON 데이터를 전송하는 함수
 void ClientChat::sendData(QJsonDocument& doc){
+    //socket 연결이 되어있고, state가 정상상태일때 전송
     if(m_clientSocket && m_clientSocket->state() == QAbstractSocket::ConnectedState){
         if(!doc.isEmpty()){
-            QByteArray bytearray = doc.toJson(QJsonDocument::Compact) + "\n"; // Json에 줄바꿈 추가
+            // JSON 메시지 끝에 줄바꿈 추가 (메시지 단위 구분용)
+            QByteArray bytearray = doc.toJson(QJsonDocument::Compact) + "\n";
             m_clientSocket->write(bytearray); // 서버로 데이터 전송
             m_clientSocket->flush(); // 버퍼 비우기
-            qDebug() << "데이터 전송 완료 " << bytearray;
         }
-    }else{
-        qDebug() << "오류: 서버 미연결로 데이터 전송 불가";
-        // QAbstractSocket::UnconnectedState는 SocketState이므로 SocketError로 변경
-        emit connectionError(QAbstractSocket::NetworkError); // <-- 수정: NetworkError 사용
+    }else{// NetworkError시 예외처리
+        emit connectionError(QAbstractSocket::NetworkError);
     }
 }
 

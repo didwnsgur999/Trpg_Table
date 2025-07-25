@@ -31,23 +31,23 @@ void ChatHandler::getByteData(QByteArray& data){
 void ChatHandler::processJsonObject(const QJsonObject &obj)
 {
     QString cmd = obj.value("cmd").toString();
-    qDebug() << "처리 중인 CMD: " << cmd; // 처리 중인 CMD 출력
+    //qDebug() << "처리 중인 CMD: " << cmd; // 처리 중인 CMD 출력
 
-    if(cmd == "ret_chat"){
+    if(cmd == "ret_chat"){ //채팅 수신
         QString chatText = obj.value("text").toString();
-        qDebug() << "채팅 메시지 수신: " << chatText;
+        //qDebug() << "채팅 메시지 수신: " << chatText;
         emit chatreceived(chatText);
     } else if (cmd == "ret_login") { // 서버로부터 로그인 결과가 왔을 때
         bool success = (obj.value("text")=="success");
         QString message = obj.value("message").toString();
         QJsonObject cus = obj.value("cus").toObject();
-        qDebug() << "로그인 결과 수신: 성공=" << success << ", 메시지=" << message;
+        //qDebug() << "로그인 결과 수신: 성공=" << success << ", 메시지=" << message;
         emit loginResult(success, message,cus); // LoginUI로 결과 전달
     } else if (cmd=="ret_add_c"){
         bool success = (obj.value("text")=="success");
         QString message = obj.value("message").toString();
         QJsonObject cus = obj.value("cus").toObject();
-        qDebug() << "회원가입 결과 수신: 성공=" << success << ", 메시지=" << message;
+        //qDebug() << "회원가입 결과 수신: 성공=" << success << ", 메시지=" << message;
         emit registerResult(success, message,cus); // LoginUI로 결과 전달
     } else if (cmd == "ret_list_r") { // 채팅방 목록 응답 처리
         QJsonArray rooms = obj.value("roomlist").toArray();
@@ -60,49 +60,46 @@ void ChatHandler::processJsonObject(const QJsonObject &obj)
         bool success = (obj.value("text").toString() == "success");
         QString roomName = obj.value("rName").toString();
         emit joinRoomResult(success, roomName);
-        // 성공 시 LobbyMainUI에서 실제 채팅방 UI로 전환 로직 추가 필요
     } else if (cmd == "ret_leave_r") { // 방 나가기 결과 응답 처리
         bool success = (obj.value("text").toString() == "success");
         QString message = obj.value("text").toString();
         emit leaveRoomResult(success, message);
-    } else if (cmd=="ret_list_p"){
+    } else if (cmd=="ret_list_p"){ // 제품 정보 응답 처리
         QJsonArray products = obj.value("productlist").toArray();
         emit productListReceived(products);
-    } else if (cmd=="ret_add_o"){
+    } else if (cmd=="ret_add_o"){ // 주문 정보 추가 처리
+        //추가 예정
         bool success = (obj.value("text").toString() == "success");
-        qDebug()<<"order추가 성공 : "<<success;
-    } else if (cmd=="ret_add_r_item"){
-        //방에 아이템 추가됬음 -> 그림은 Backend에 있다고 생각하자.
+    } else if (cmd=="ret_add_r_item"){ //채팅방 아이템 추가 처리
         bool success = (obj.value("text").toString()=="success");
         if(success) emit addRoomItemResult(obj);
-    } else if (cmd=="ret_del_r_item"){
+    } else if (cmd=="ret_del_r_item"){ //채팅방 아이템 제거 처리
         bool success = (obj.value("text").toString()=="success");
         if(success) emit delRoomItemResult(obj);
-    } else if (cmd=="ret_mov_r_item"){
+    } else if (cmd=="ret_mov_r_item"){ //채팅방 아이템 위치 처리
         bool success = (obj.value("text").toString()=="success");
         if(success) emit movRoomItemResult(obj);
-    } else if (cmd=="ret_list_users"){
+    } else if (cmd=="ret_list_users"){ // 전체인원 응답 처리
         QJsonArray userList = obj["users"].toArray();
         emit AllUserListReceived(userList);
-    } else if (cmd=="ret_list_r_users"){
+    } else if (cmd=="ret_list_r_users"){ //채팅방 입장인원 응답 처리
         QJsonArray roomUserList = obj["rusers"].toArray();
         emit roomUserListReceived(roomUserList);
-    } else if (cmd=="ret_list_r_items"){
+    } else if (cmd=="ret_list_r_items"){ //채팅방 아이템 전체 응답 처리
         QJsonArray roomItemList = obj["rItems"].toArray();
         emit roomItemListReceived(roomItemList);
-    } else if (cmd=="ret_invite_r"){
+    } else if (cmd=="ret_invite_r"){ // 초대 응답 처리
         bool success = (obj.value("text").toString()=="success");
-        if(success){
+        if(success){ //
             QString rName = obj["rName"].toString();
             emit inviteReceived(rName);
-        } else {
-            //내가 초대하고 초대 무효됬을때.
+        } else { //내가 초대하고 초대 무효됬을때.
             emit inviteFailed();
         }
     } else if (cmd=="ret_ban_r"){
         QString message = obj.value("text").toString();
         emit banreceived(message);
-    } else if (cmd=="ret_banned_r"){
+    } else if (cmd=="ret_banned_r"){ //
         emit bannedreceived();
     }
 }
