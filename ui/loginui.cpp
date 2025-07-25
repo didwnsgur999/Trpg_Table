@@ -112,6 +112,12 @@ void LoginUI::on_serverConnectionEstablished()
     ui->serverIpLineEdit->setEnabled(false); // serverIpLineEdit 비활성화
     ui->serverPortLineEdit->setEnabled(false); // serverPortLineEdit 비활성화
     ui->ServerConnectButton->setEnabled(false); // serverbutton 비활성화
+    // server 포트관련 일단 숨겨놓기
+    ui->serverIpLineEdit->hide();
+    ui->serverPortLineEdit->hide();
+    ui->serverIpLabel->hide();
+    ui->serverPortLabel->hide();
+    ui->ServerConnectButton->hide();
 }
 
 // 서버 연결 오류 발생 시 호출될 슬롯
