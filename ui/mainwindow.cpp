@@ -5,6 +5,7 @@
 #include "mycore/Backend.h"
 #include <QDir>
 #include <QDebug>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -39,4 +40,18 @@ void MainWindow::changePage(int index)
 {
     this->setWindowTitle(QString(tr("현재 접속자: %1").arg(Backend::getInstance().getUser()->getName())));
     ui->UI_STACK->setCurrentIndex(index);
+}
+//종료 클릭시 처리
+void MainWindow::closeEvent(QCloseEvent *event){
+    QMessageBox::StandardButton res = QMessageBox::question(
+        this,tr("종료 확인"),tr("정말 종료하시겠습니까?"),//문구
+        QMessageBox::Yes | QMessageBox::No,//버튼
+        QMessageBox::No//x표시로 나가면 no 처리
+    );
+
+    if (res == QMessageBox::Yes) {
+        event->accept();  // 창 닫기 진행
+    } else {
+        event->ignore();  // 창 닫기 무시
+    }
 }

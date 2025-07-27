@@ -42,7 +42,9 @@ void ClientChat::makeSocket(const QString& ip, int port){
 
     // 서버에 연결 시도
     m_clientSocket->connectToHost(ip, port);
-    qDebug() << "서버 연결 시도 중...";
+    if (!m_clientSocket->waitForConnected(5000)) { // 3초만 기다림
+        return;
+    }
 }
 
 // 소켓에서 데이터가 수신되었을 때 호출되는 슬롯

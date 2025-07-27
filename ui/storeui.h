@@ -22,6 +22,7 @@ public:
     void loadProductList(const QJsonArray& array);
     void loadUserProduct();
     void resetStore();
+    QString encodePixmapToBase64(const QPixmap& pixmap);
 signals:
     void requestPageChange(int index);
 
@@ -30,6 +31,8 @@ private slots:
     void on_resetButton_clicked();
 
     void on_storeListWidget_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_storeListWidget_itemEntered(QListWidgetItem *item);
 
 private:
     Ui::storeUI *ui;
