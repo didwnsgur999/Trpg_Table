@@ -30,6 +30,7 @@ HEADERS += \
     mycore/Backend.h \
     mycore/Info.h \
     mycore/chathandler.h \
+    timer/responsetimer.h \
     ui/chatroomui.h \
     mycore/clientchat.h \
     mycore/customer.h \
@@ -42,7 +43,8 @@ HEADERS += \
     ui/roomdisplayui.h \
     mycore/roomitem.h \
     ui/roomlistui.h \
-    ui/storeui.h
+    ui/storeui.h \
+    timer/responsetimer.h
 
 FORMS += \
     ui/chatroomui.ui \
