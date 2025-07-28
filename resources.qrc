@@ -10,4 +10,7 @@
     <qresource prefix="/sound">
         <file>sound/bgm.mp3</file>
     </qresource>
+    <qresource prefix="/i18n">
+        <file>Trpg_Table_ko_KR.qm</file>
+    </qresource>
 </RCC>

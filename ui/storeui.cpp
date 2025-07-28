@@ -57,17 +57,17 @@ void storeUI::loadUserProduct(){
     for(auto it = hash.begin();it!=hash.end();++it){
         QString name = it.key();
         int id = it.value();
-        QString displayText = QString("%1 (ID: %2)").arg(name).arg(id);
+        QString displayText = QString(tr("%1 (ID: %2)")).arg(name).arg(id);
         ui->userListWidget->addItem(displayText);
     }
 }
 //제품 서버로부터 가져오기
 void storeUI::on_resetButton_clicked()
 {
-    ResponseTimer::getInstance().start("제품 데이터 받아오기");
+    //ResponseTimer::getInstance().start("제품 데이터 받아오기");
     //send list_p;
     if (!m_clientChat->isConnected()) {
-        QMessageBox::warning(this, "오류", "서버에 연결되어 있지 않습니다.");
+        QMessageBox::warning(this, tr("Error"), tr("The connection to the server has been lost"));
         return;
     }
     QJsonObject obj;
@@ -86,7 +86,7 @@ void storeUI::on_storeListWidget_itemDoubleClicked(QListWidgetItem *item)
     int response = QMessageBox::question(
         this,
         "상품 구매",
-        QString("'%1' 상품을 1개 구매하시겠습니까?\n가격: %2원\n남은 재고: %3개")
+        QString(tr("'%1' do you really want to buy this?\nPrice: %2Won\nItems Left: %3"))
             .arg(name)
             .arg(product->getPrice())
             .arg(product->getCnt()),
@@ -95,11 +95,11 @@ void storeUI::on_storeListWidget_itemDoubleClicked(QListWidgetItem *item)
 
     if (response == QMessageBox::Yes) {
         if (product->getCnt() <= 0) {
-            QMessageBox::warning(this, "재고 없음", "해당 상품은 품절입니다.");
+            QMessageBox::warning(this, tr("Out of Stock"), tr("This Item is currently out of stock."));
             return;
         }
         if (Backend::getInstance().getUser()->searchProduct(name)){
-            QMessageBox::warning(this, "이미 있음", "해당 상품은 가지고 있습니다.");
+            QMessageBox::warning(this, tr("Have one"), tr("you already have this Item"));
             return;
         }
         //본인 product에 추가.
@@ -116,17 +116,11 @@ void storeUI::on_storeListWidget_itemDoubleClicked(QListWidgetItem *item)
         QJsonDocument doc(obj);
         m_clientChat->sendData(doc);
 
-        QMessageBox::information(this, "구매 완료",
-                                 QString("%1 상품을 1개 구매했습니다.\n남은 재고: %2개")
+        QMessageBox::information(this, tr("Purchase Successful"),
+                                 QString(tr("%1 You have successfully purchased the item.\nItems left: %2"))
                                      .arg(name)
                                      .arg(product->getCnt()));
 
-        // UI에 툴팁 업데이트
-        item->setToolTip(
-            QString("가격: %1원\n재고: %2개")
-                .arg(product->getPrice())
-                .arg(product->getCnt())
-            );
         loadUserProduct();
     }
 }
@@ -152,7 +146,7 @@ void storeUI::on_storeListWidget_itemEntered(QListWidgetItem *item)
         QString base64 = encodePixmapToBase64(pixPreview);
 
         QString tooltip = "<img src='data:image/png;base64," + base64 + "'><br>" +
-                          QString("가격: %1원<br>재고: %2개")
+                          QString(tr("Price: %1won<br>Item left: %2"))
                               .arg(prod->getPrice())
                               .arg(prod->getCnt());
 

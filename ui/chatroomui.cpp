@@ -131,7 +131,7 @@ void ChatRoomUI::on_backToListButton_clicked()
     QString currentRoomName = Backend::getInstance().getRoom();
 
     if(!currentRoomName.isEmpty()){
-        QMessageBox::warning(this, tr("방 나가기"), tr("현재 채팅방에서 나갑니다."));
+        QMessageBox::warning(this, tr("quit room"), tr("leave current chatroom"));
     }
 
     QJsonObject obj;
@@ -242,7 +242,7 @@ void ChatRoomUI::loadRoomUserList(const QJsonArray& RoomUserList){
             QJsonObject obj = val.toObject();
             int id = obj["id"].toInt();
             QString Name = obj["Name"].toString();
-            QListWidgetItem *item = new QListWidgetItem(QString(tr("%1 (아이디: %2)")).arg(Name).arg(id));
+            QListWidgetItem *item = new QListWidgetItem(QString(tr("%1 (ID: %2)")).arg(Name).arg(id));
             item->setData(Qt::UserRole,id);
             ui->RoomUserListWidget->addItem(item);
         }
@@ -257,7 +257,7 @@ void ChatRoomUI::on_UserListWidget_itemDoubleClicked(QListWidgetItem *item)
         QListWidgetItem *roomUserItem = ui->RoomUserListWidget->item(i);
         int Userid = roomUserItem->data(Qt::UserRole).toInt();
         if(Userid==id){
-            QMessageBox::warning(this,tr("초대불가"),tr("이미 유저리스트에 존재합니다. 만약 없다면 최신화 해주세요."));
+            QMessageBox::warning(this,tr("Invite Failed"),tr("opponent is already in the room, please reload the userlist"));
             return;
         }
     }
@@ -269,7 +269,7 @@ void ChatRoomUI::on_UserListWidget_itemDoubleClicked(QListWidgetItem *item)
 
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
-    QMessageBox::warning(this,tr("초대"),tr("%1 님에게 초대가 전송되었습니다.").arg(item->text()));
+    QMessageBox::warning(this,tr("Invite Requested"),tr("%1 : the invitation is requested").arg(item->text()));
     //일단 방에서 나가고 들어가는 기능이 되야 처리가 가능하겠다.
     //아직 connect도 안됬고 이 함수만 만들어놨음
 }
@@ -284,7 +284,7 @@ void ChatRoomUI::on_RoomUserListWidget_itemDoubleClicked(QListWidgetItem *item)
 {
     int id = item->data(Qt::UserRole).toInt();
     if(id==Backend::getInstance().getUser()->getId()){
-        QMessageBox::warning(this,tr("강퇴 거부"),tr("본인은 강퇴불가합니다."));
+        QMessageBox::warning(this,tr("Ban Failed"),tr("You can't ban yourself"));
         return;
     }
     QJsonObject obj;
@@ -299,5 +299,5 @@ void ChatRoomUI::on_RoomUserListWidget_itemDoubleClicked(QListWidgetItem *item)
 
 //실패시 실패이유 제공
 void ChatRoomUI::banFailHandle(const QString& message){
-    QMessageBox::warning(this,tr("%1").arg(message),tr("%1 : 이유로 강퇴처리 불가능합니다.").arg(message));
+    QMessageBox::warning(this,tr("%1").arg(message),tr("%1 : The ban could not be completed for this reason.").arg(message));
 }

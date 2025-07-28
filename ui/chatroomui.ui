@@ -19,7 +19,7 @@
      <item>
       <widget class="QLabel" name="currentRoomNameLabel">
        <property name="text">
-        <string>현재 방</string>
+        <string>RoomName : </string>
        </property>
       </widget>
      </item>
@@ -75,14 +75,14 @@
        <item>
         <widget class="QLineEdit" name="messageLineEdit">
          <property name="placeholderText">
-          <string>메시지를 입력하세요...</string>
+          <string>text your message...</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="sendButton">
          <property name="text">
-          <string>전송</string>
+          <string>Send</string>
          </property>
         </widget>
        </item>
@@ -91,7 +91,7 @@
      <item>
       <widget class="QPushButton" name="backToListButton">
        <property name="text">
-        <string>목록으로 돌아가기</string>
+        <string>Back to the Roomlist</string>
        </property>
       </widget>
      </item>

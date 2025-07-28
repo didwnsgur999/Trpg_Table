@@ -16,7 +16,6 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
     , ui(new Ui::LoginUI)
     , m_clientChat(clientChat)
 {
-    qDebug() << "[Client LoginUI] 생성자 호출 시작.";
     ui->setupUi(this);
     // qml 연결
     background = new QQuickWidget(this);
@@ -71,15 +70,14 @@ LoginUI::LoginUI(ClientChat* clientChat, QWidget *parent)
 
     // 기본값 설정 - 서버 IP 및 포트
     ui->serverIpLineEdit->setText("192.168.2.18");
-    //ui->serverIpLineEdit->setText("127.0.0.2");
+    //ui->serverIpLineEdit->setText("127.0.0.1");
     ui->serverPortLineEdit->setText("30800");
 
     // 초기 상태 메시지
-    emit showStatusMessage("서버 연결 시도중...");
+    emit showStatusMessage(tr("try server connect..."));
 
     // 프로그램 실행하자마자 바로 서버 연결 시도
     attemptConnectToServer();
-    qDebug() << "[Client LoginUI] 생성자 호출 종료.";
 }
 
 LoginUI::~LoginUI()
@@ -94,15 +92,14 @@ void LoginUI::attemptConnectToServer()
     int port = ui->serverPortLineEdit->text().toInt();
 
     qDebug() << "[Client LoginUI] attemptConnectToServer - 서버 연결 시도 IP:" << ip << " Port:" << port;
-    emit showStatusMessage("서버 연결 시도 중..."); // <-- showStatusMessage 시그널 사용
+    emit showStatusMessage(tr("try server connect...")); // <-- showStatusMessage 시그널 사용
     m_clientChat->makeSocket(ip, port);
 }
 
 // 서버 연결 성공 시 호출될 슬롯
 void LoginUI::on_serverConnectionEstablished()
 {
-    qDebug() << "[Client LoginUI] on_serverConnectionEstablished() - 서버 연결 성공";
-    emit showStatusMessage(" 환영합니다! ", false); // <-- showStatusMessage 시그널 사용
+    emit showStatusMessage(tr(" Welcome! "), false); // <-- showStatusMessage 시그널 사용
 
     // 연결 성공 시 로그인 관련 UI 활성화
     ui->usernameLineEdit->setEnabled(true);
@@ -123,7 +120,6 @@ void LoginUI::on_serverConnectionEstablished()
 // 서버 연결 오류 발생 시 호출될 슬롯
 void LoginUI::on_serverConnectionError(QAbstractSocket::SocketError socketError)
 {
-    qDebug()<<"here";
     QString errorMessage;
     switch(socketError){
     case QAbstractSocket::ConnectionRefusedError:

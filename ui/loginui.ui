@@ -62,7 +62,7 @@
 font: 600 12pt &quot;나눔고딕&quot;;</string>
            </property>
            <property name="text">
-            <string>서버 IP:</string>
+            <string>IP:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -109,7 +109,7 @@ font: 600 12pt &quot;나눔고딕&quot;;</string>
 font: 600 12pt &quot;나눔고딕&quot;;</string>
            </property>
            <property name="text">
-            <string>포트:</string>
+            <string>Port:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -159,7 +159,7 @@ font: 600 12pt &quot;나눔고딕&quot;;</string>
    <item>
     <widget class="QLabel" name="connectionStatusLabel">
      <property name="text">
-      <string>연결 상태:</string>
+      <string>connect status:</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -222,7 +222,7 @@ font: 600 12pt &quot;나눔고딕&quot;;</string>
 font: 600 12pt &quot;나눔고딕&quot;;</string>
           </property>
           <property name="text">
-           <string>아이디</string>
+           <string>ID</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -252,7 +252,7 @@ font: 600 12pt &quot;나눔고딕&quot;;</string>
 font: 600 12pt &quot;나눔고딕&quot;;</string>
           </property>
           <property name="text">
-           <string>비밀번호</string>
+           <string>Password</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -337,7 +337,7 @@ font: 600 12pt &quot;나눔고딕&quot;;</string>
 font: 600 12pt &quot;나눔고딕&quot;;</string>
        </property>
        <property name="text">
-        <string>로그인</string>
+        <string>login</string>
        </property>
       </widget>
      </item>
@@ -384,7 +384,7 @@ font: 600 12pt &quot;나눔고딕&quot;;</string>
 font: 600 12pt &quot;나눔고딕&quot;;</string>
        </property>
        <property name="text">
-        <string>회원가입</string>
+        <string>add account</string>
        </property>
       </widget>
      </item>

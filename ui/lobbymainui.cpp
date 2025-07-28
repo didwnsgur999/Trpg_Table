@@ -25,8 +25,8 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
     // 스택 위젯에 UI 페이지 추가
     ui->rightStackedWidget->addWidget(m_roomListUI);
     ui->rightStackedWidget->addWidget(m_chatRoomUI);
-    ui->leftTabWidget->addTab(m_storeUI,tr("상점"));
-    ui->leftTabWidget->addTab(m_roomDisplayUI,tr("방"));
+    ui->leftTabWidget->addTab(m_storeUI,tr("store"));
+    ui->leftTabWidget->addTab(m_roomDisplayUI,tr("Field Notes"));
 
     // 찻 화면은 룸리스트 보여주는 거
     ui->rightStackedWidget->setCurrentIndex(0);
@@ -50,15 +50,15 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
     connect(m_clientChat->getChatHandler(),&ChatHandler::inviteReceived,[=](QString rName){
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this,
-                                      tr("%1 초대").arg(rName),
-                                      tr("방 %1 조대를 수락하시겠습니까?").arg(rName),
+                                      tr("%1 invitation").arg(rName),
+                                      tr("Will you accept invitation from room %1?").arg(rName),
                                       QMessageBox::Yes | QMessageBox::No);
         QJsonObject obj;
         if (reply == QMessageBox::Yes) {
             emit acceptInvite(rName);
         } else {
             //reject
-            QMessageBox::information(this,tr("초대 거부"),tr("초대를 거부하였습니다"));
+            QMessageBox::information(this,tr("invitation rejected"),tr("you rejected invitation"));
         }
     });
     //방 나가야하는지 체크
@@ -67,7 +67,7 @@ LobbyMainUI::LobbyMainUI(ClientChat* clientChat, QWidget *parent)
     connect(this,&LobbyMainUI::acceptInvite,m_roomListUI,&RoomListUI::InviteHandle);
     //밴된 사실 공지 밴처리는 leaveRoom으로 했을거임
     connect(m_clientChat->getChatHandler(),&ChatHandler::bannedreceived,[=](){
-        QMessageBox::warning(this,tr("강퇴"),tr("당신은 강퇴되었습니다."));
+        QMessageBox::warning(this,tr("ban"),tr("you're banned from the room"));
     });
 }
 

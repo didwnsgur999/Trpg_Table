@@ -36,7 +36,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>상점 아이템</string>
+          <string>Store Item</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -65,7 +65,7 @@
        <item>
         <widget class="QPushButton" name="resetButton">
          <property name="text">
-          <string>새로고침</string>
+          <string>reload</string>
          </property>
         </widget>
        </item>
@@ -76,7 +76,7 @@
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>유저 소지품</string>
+          <string>User Inventory</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignCenter</set>

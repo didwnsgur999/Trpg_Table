@@ -112,19 +112,18 @@ void RoomListUI::on_enterRoomButton_clicked()
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
 }
-
+//입장 성공 실패 처리
 void RoomListUI::handleRoomJoinResult(bool success, const QString &roomName)
 {
     if(success){
         Backend::getInstance().setRoom(roomName);
-        qDebug()<<Backend::getInstance().getRoom();
         emit joinRoomRequested(roomName);
     }else{
-        QMessageBox::warning(this,tr("입장 실패"),tr("당신은 방에 들어가지 못했습니다."));
+        QMessageBox::warning(this,tr("Join Failed"),tr("you've failed to join the room"));
     }
 }
 
-//item clicked -> text to ui->chat
+//방 이름 누르면 자동으로 textline에 설정됨.
 void RoomListUI::on_chatListWidget_itemClicked(QListWidgetItem *item)
 {
     //roomName 가져와서 createRoomLineEdit에 roomName 처리.
@@ -136,7 +135,8 @@ void RoomListUI::InviteHandle(const QString& rName){
     ui->createRoomLineEdit->setText(rName);
     on_enterRoomButton_clicked();
 }
+//초대 실패
 void RoomListUI::InviteFailHandle(){
-    QMessageBox::warning(this,tr("초대 실패"),tr("상대방이 접속을 종료하였습니다."));
+    QMessageBox::warning(this,tr("Invite Failed"),tr("The opponent is currently offline"));
 }
 

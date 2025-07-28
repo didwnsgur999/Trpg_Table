@@ -28,8 +28,6 @@ RoomDisplayUI::RoomDisplayUI(ClientChat* clientChat,QWidget *parent)
         obj["iid"] = id;
         obj["rName"] = Backend::getInstance().getRoom();
 
-        qDebug()<<"del_r_item id : "<<id;
-
         QJsonDocument doc(obj);
         m_clientChat->sendData(doc);
     });
@@ -103,7 +101,7 @@ void RoomDisplayUI::on_ItemButton_clicked()
 void RoomDisplayUI::loadProductList(){
     ui->UserItemListWidget->clear();
     //헤더
-    QListWidgetItem* labelItem = new QListWidgetItem("유저 소지품");
+    QListWidgetItem* labelItem = new QListWidgetItem(tr("User Item"));
     labelItem->setFlags(Qt::NoItemFlags);
     labelItem->setTextAlignment(Qt::AlignCenter);
     ui->UserItemListWidget->addItem(labelItem);
@@ -112,7 +110,7 @@ void RoomDisplayUI::loadProductList(){
     for(auto it = hash.begin();it!=hash.end();++it){
         QString name = it.key();
         int id = it.value();
-        QString displayText = QString("%1 (ID: %2)").arg(name).arg(id);
+        QString displayText = QString(tr("%1 (ID: %2)")).arg(name).arg(id);
         QListWidgetItem* item = new QListWidgetItem(displayText);
         item->setData(Qt::UserRole, id);
         item->setData(Qt::UserRole+1, name);
@@ -144,8 +142,6 @@ void RoomDisplayUI::addRoomItemHandle(const QJsonObject& product){
     auto item = RoomItem::fromJson(itemObj);
     QSharedPointer<RoomItem> itemptr=QSharedPointer<RoomItem>::create(item);
     Backend::getInstance().addRoomItem(itemptr);
-    //디버그 메시지
-    qDebug()<<item.iid<<item.pid<<item.name<<item.x<<item.y<<item.z;
     //왔으니까 roomlist에 저장해놓고 처리하는게 맞나?
     //여기서 보이는거고
     loadRoomItemList();
@@ -156,7 +152,7 @@ void RoomDisplayUI::addRoomItemHandle(const QJsonObject& product){
 void RoomDisplayUI::loadRoomItemList(){
     ui->RoomItemListWidget->clear();
     //헤더
-    QListWidgetItem* labelItem = new QListWidgetItem("방 현재 물품");
+    QListWidgetItem* labelItem = new QListWidgetItem(tr("current room item"));
     labelItem->setFlags(Qt::NoItemFlags);
     labelItem->setTextAlignment(Qt::AlignCenter);
     ui->RoomItemListWidget->addItem(labelItem);
@@ -205,7 +201,6 @@ void RoomDisplayUI::displayItem(int iid){
 void RoomDisplayUI::on_RoomItemListWidget_itemDoubleClicked(QListWidgetItem *item)
 {
     //erase room item sequence
-    qDebug()<<"erase room item"<<item->data(Qt::UserRole).toInt();
     //send del message
     int iid = item->data(Qt::UserRole).toInt();
     QJsonObject obj;
@@ -213,15 +208,12 @@ void RoomDisplayUI::on_RoomItemListWidget_itemDoubleClicked(QListWidgetItem *ite
     obj["iid"] = iid;
     obj["rName"] = Backend::getInstance().getRoom();
 
-    qDebug()<<"del_r_item id : "<<iid;
-
     QJsonDocument doc(obj);
     m_clientChat->sendData(doc);
 }
 
 void RoomDisplayUI::delRoomItemHandle(const QJsonObject& item){
     int iid = item["iid"].toInt();
-    qDebug()<<iid;
     //delete sequence. backend roomitem delete, ui->roomitem erase
     Backend::getInstance().delRoomItem(iid);
     QList<QGraphicsItem*> items = scene->items();
@@ -229,7 +221,6 @@ void RoomDisplayUI::delRoomItemHandle(const QJsonObject& item){
         if (i->data(0)==iid) {
             scene->removeItem(i);
             delete i;
-            qDebug() << "Graphics item removed from scene";
             break;
         }
     }
